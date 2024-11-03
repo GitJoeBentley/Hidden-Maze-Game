@@ -18,47 +18,56 @@ Grid::Grid(int level) : numWalls(0), step(nullptr)
     std::string filename = std::string("grid") + sout.str() + ".txt";
     std::ifstream fin(filename);
     std::string line;
-    for (int i=0;i< 40;i++)
+    for (int row=0; row < 40; row++)
     {
         getline(fin, line);
         line.resize(40, ' ');
-        for (int j = 0; j < 40; j++)
+        for (int col = 0; col < 40; col++)
         {
-            if (line[j] == '1') {
-                cell[i][j] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
-                cell[i][j]->setPosition(sf::Vector2f(100.0f + j * 20.0f, 100.0f + i * 20.0f));
-                cell[i][j]->setFillColor(sf::Color(20,0,20));
+            if (line[col] == '1')
+            {
+                cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
+                cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
+                cell[row][col]->setFillColor(sf::Color(20,0,20));
                 numWalls++;
             }
         }
     }
     fin.close();
     // Add random walls
+
+
     int counter = 0;
+
     do {
-        int x = rand() % 40;
-        int y = rand() % 40;
-        if (!(cell[x][y])) {
-            cell[x][y] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
-            cell[x][y]->setPosition(sf::Vector2f(100.0f + x * 20.0f, 100.0f + y * 20.0f));
-            cell[x][y]->setFillColor(sf::Color(30, 0, 30));
+        int row = rand() % 40;
+        int col = rand() % 40;
+        if (!(cell[row][col])) {
+            cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
+            cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
+            cell[row][col]->setFillColor(sf::Color(30, 0, 30));
             numWalls++;
             counter++;
         }
     } while (counter < 100 * level);
+
+
     // Add rubber walls
     counter = 0;
-    do {
-        int x = rand() % 40;
-        int y = rand() % 40;
-        if (!(cell[x][y])) {
-            cell[x][y] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
-            cell[x][y]->setPosition(sf::Vector2f(100.0f + x * 20.0f, 100.0f + y * 20.0f));
-            cell[x][y]->setFillColor(sf::Color(240, 140,190));
+    do
+    {
+        int row = rand() % 40;
+        int col = rand() % 40;
+        if (!(cell[row][col]))
+        {
+            cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
+            cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
+            cell[row][col]->setFillColor(sf::Color(240, 140,190));
             numWalls++;
             counter++;
         }
-    } while (counter < 10 * level);
+    }
+    while (counter < 10 * level);
 }
 
 Grid::~Grid()
@@ -82,8 +91,7 @@ void Grid::draw(sf::RenderWindow& window)
 
 void Grid::generate_path()
 {
-    path.push_back(0);
-    int loc = 0;
+    update_path(0,0);
     int move, last_move = -1;
     int x = 0, y = 0;
     while (!(x == 39 and y == 39))
@@ -92,52 +100,59 @@ void Grid::generate_path()
         switch (move)
         {
         case 0:
-            if (x < 39 && last_move != 4) {
+            if (x < 39 && last_move != 4)
+            {
                 x++;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
             }
+            else move = last_move;
             break;
         case 1:
-            if (x < 38 && last_move != 4) {
+            if (x < 38 && last_move != 4)
+            {
                 x++;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
                 x++;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
             }
+            else move = last_move;
             break;
         case 2:
-            if (y < 39 && last_move != 5) {
+            if (y < 39 && last_move != 5)
+            {
                 y++;
                 update_path(x, y);
-                //path.push_back(100* x + y);
             }
+            else move = last_move;
             break;
         case 3:
-            if (y < 38 && last_move != 5) {
+            if (y < 38 && last_move != 5)
+            {
                 y++;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
                 y++;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
             }
+            else move = last_move;
+
             break;
         case 4:
-            if (x > 0 && last_move != 0 && last_move != 1) {
+            if (x > 0 && last_move != 0 && last_move != 1)
+            {
                 x--;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
             }
+            else move = last_move;
+
             break;
         case 5:
-            if (y > 0 && last_move != 2 && last_move != 3) {
+            if (y > 0 && last_move != 2 && last_move != 3)
+            {
                 y--;
                 update_path(x, y);
-                //path.push_back(100 * x + y);
             }
+            else move = last_move;
+
             break;
         default:
             ;
@@ -145,19 +160,19 @@ void Grid::generate_path()
         last_move = move;
     }
     sort(path.begin(), path.end());
-    std::vector<int>::iterator it = std::unique(path.begin(), path.end());   
+    std::vector<int>::iterator it = std::unique(path.begin(), path.end());
     path.resize(std::distance(path.begin(), it));
     step = new sf::CircleShape[path.size()];
-    
+
     for (unsigned i = 0; i < path.size(); i++)
     {
         x = path[i] / 100;
         y = path[i] % 100;
         step[i].setRadius(5.0f);
-        step[i].setPosition(sf::Vector2f(100.0f + x * 20.0f, 100.0f + y * 20.0f));
+        step[i].setPosition(sf::Vector2f(100.0f + x * 20.0f, WindowVerticalOffset + y * 20.0f));
         step[i].setFillColor(sf::Color(230, 0, 30));
-        delete cell[y][x];
-        cell[y][x] = nullptr;
+        //delete cell[y][x];
+        //cell[y][x] = nullptr;
     }
 }
 
@@ -180,11 +195,14 @@ void Grid::draw_path(sf::RenderWindow& window)
 void Grid::update_path(int x, int y)
 {
     int newLoc = 100 * x + y;
-    if (find(path.begin(), path.end(), newLoc) == path.end()) {
-        path.push_back(newLoc);
-        if (cell[y][x]) {
-            delete cell[y][x];
-            cell[y][x] = nullptr;
+    if (find(path.begin(), path.end(), newLoc) == path.end())
+    {
+        if (cell[x][y])
+        {
+            //cout << "*** Deleting cell (" << x << ',' << y << ')' << endl;
+            delete cell[x][y];
+            cell[x][y] = nullptr;
         }
+        path.push_back(newLoc);
     }
 }

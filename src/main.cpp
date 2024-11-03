@@ -9,19 +9,19 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Grid.h"
+#include "Constants.h"
 
 using std::cout;
 using std::endl;
-
-int getGrid(int grid[40][40], int grid_number);
 
 
 int main()
 {
     srand(static_cast<unsigned>(time(0)));
-    int level = 1;
+    int level = 2;
+    bool displayMaze = false;
     Grid grid(level);
-    sf::RenderWindow window(sf::VideoMode(1024, 1024), "", sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(1000, 1024), "", sf::Style::Close);
     window.setTitle(sf::String("Joe's Hidden Maze Game"));
     float GameWindowSize = 40*20.0f;
     sf::RectangleShape border(sf::Vector2f(GameWindowSize, GameWindowSize));
@@ -30,14 +30,14 @@ int main()
     // set a 10-pixel wide orange outline
     border.setOutlineThickness(20);
     border.setOutlineColor(sf::Color(250, 150, 100));
-    border.setPosition(100.0f, 100.0f);
+    border.setPosition(100.0f, WindowVerticalOffset);
 
     sf::RectangleShape door1(sf::Vector2f(20.0f, 20.0f));
     door1.setFillColor(sf::Color(0,0,0));
-    door1.setPosition(100.0f - 20.0f, 100.0f + 0 * 20.0f);
+    door1.setPosition(100.0f - 20.0f, WindowVerticalOffset + 0 * 20.0f);
     sf::RectangleShape door2(sf::Vector2f(20.0f, 20.0f));
     door2.setFillColor(sf::Color(0,0,0));
-    door2.setPosition(100.0f + 40 * 20.0f, 100.0f + 39 * 20.0f);
+    door2.setPosition(100.0f + 40 * 20.0f, WindowVerticalOffset + 39 * 20.0f);
 
     //sf::RectangleShape wall(sf::Vector2f(20.0f, 20.0f));
     //wall.setFillColor(sf::Color(20,0,20));
@@ -46,12 +46,12 @@ int main()
     arrowTexture.loadFromFile("c:/temp/arrow.jpg");
     sf::Sprite arrow1;
     arrow1.setTexture(arrowTexture);
-    arrow1.setPosition(100.0f - 40.0f, 100.0f + 0 * 20.0f);
+    arrow1.setPosition(100.0f - 40.0f, WindowVerticalOffset + 0 * 20.0f);
     sf::Sprite arrow2;
     arrow2.setTexture(arrowTexture);
-    arrow2.setPosition(100.0f + 41 * 20.0f, 100.0f + 39 * 20.0f);
+    arrow2.setPosition(100.0f + 41 * 20.0f, WindowVerticalOffset + 39 * 20.0f);
     grid.generate_path();
-    grid.print_path();
+    //grid.print_path();
 
     // Run the program as long as the window is open
     while (window.isOpen())
@@ -67,10 +67,13 @@ int main()
                 window.close();
             }
             // Escape key pressed
-            if ((event.type == sf::Event::KeyPressed)
-                && (event.key.code == sf::Keyboard::Escape))
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
             {
                 window.close();
+            }
+            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3))
+            {
+                displayMaze = !displayMaze;
             }
         }
         window.draw(border);
@@ -78,35 +81,14 @@ int main()
         window.draw(door2);
         window.draw(arrow1);
         window.draw(arrow2);
-        
-        grid.draw_path(window);
-        grid.draw(window);
+
+        if (displayMaze) {
+            grid.draw_path(window);
+            grid.draw(window);
+        }
         window.display();
     }
 
 
     return 0;
-}
-
-int getGrid(int grid[40][40], int grid_number)
-{
-    std::ifstream fin("grid1.txt");
-    std::string line;
-    int count = 0;
-    for (int i=0;i< 40;i++)
-    {
-        getline(fin, line);
-        line.resize(40, ' ');
-        for (int j = 0; j < 40; j++)
-        {
-            if (line[j] == '1') {
-                grid[i][j] = 1;
-                count++;
-            }
-
-            else grid[i][j] = 0;
-        }
-    }
-    fin.close();
-    return count;
 }
