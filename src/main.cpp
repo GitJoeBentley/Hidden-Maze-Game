@@ -13,12 +13,17 @@
 
 using std::cout;
 using std::endl;
+using std::string;
 
 
 int main()
 {
     srand(static_cast<unsigned>(time(0)));
-    int level = 2;
+    int level = 90;
+    int bruises = 0;
+    int score = 0;
+    string name = "Joe";
+
     bool displayMaze = false;
     Grid grid(level);
     sf::RenderWindow window(sf::VideoMode(1000, 1024), "", sf::Style::Close);
@@ -53,6 +58,22 @@ int main()
     grid.generate_path();
     //grid.print_path();
 
+    // Fonts
+    sf::Font font;
+    sf::Font courierfont;
+    font.loadFromFile("c:/temp/ITCKRIST.TTF");
+    courierfont.loadFromFile("c:/temp/courbd.ttf");
+
+    sf::Text titleText("Joe's Hidden Maze Game", font, 36);
+    titleText.setFillColor(sf::Color(255,200,210));
+    titleText.setPosition(270.0f,20.0f);
+
+    name.resize(23,' ');
+    sf::Text scoreText(name + "Bruises " + std::to_string(bruises) + "                   Score " + std::to_string(score), courierfont, 24);
+    scoreText.setFillColor(sf::Color(160,250,250));
+    scoreText.setPosition(100.0f,90.0f);
+
+
     // Run the program as long as the window is open
     while (window.isOpen())
     {
@@ -81,6 +102,8 @@ int main()
         window.draw(door2);
         window.draw(arrow1);
         window.draw(arrow2);
+        window.draw(scoreText);
+        window.draw(titleText);
 
         if (displayMaze) {
             grid.draw_path(window);
