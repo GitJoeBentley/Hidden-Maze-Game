@@ -28,7 +28,7 @@ Grid::Grid(int level) : numWalls(0), step(nullptr)
             {
                 cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
                 cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
-                cell[row][col]->setFillColor(sf::Color(20,0,20));
+                cell[row][col]->setFillColor(sf::Color(sf::Color::Black));
                 numWalls++;
             }
         }
@@ -45,7 +45,7 @@ Grid::Grid(int level) : numWalls(0), step(nullptr)
         if (!(cell[row][col])) {
             cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
             cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
-            cell[row][col]->setFillColor(sf::Color(30, 0, 30));
+            cell[row][col]->setFillColor(sf::Color(sf::Color::Black));
             numWalls++;
             counter++;
         }
@@ -62,7 +62,8 @@ Grid::Grid(int level) : numWalls(0), step(nullptr)
         {
             cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
             cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
-            cell[row][col]->setFillColor(sf::Color(240, 140,190));
+            //cell[row][col]->setFillColor(sf::Color(240, 140,190));
+            cell[row][col]->setFillColor(sf::Color(sf::Color::Magenta));
             numWalls++;
             counter++;
         }
@@ -168,9 +169,10 @@ void Grid::generate_path()
     {
         x = path[i] / 100;
         y = path[i] % 100;
-        step[i].setRadius(5.0f);
+        step[i].setRadius(2.0f);
         step[i].setPosition(sf::Vector2f(100.0f + x * 20.0f, WindowVerticalOffset + y * 20.0f));
-        step[i].setFillColor(sf::Color(230, 0, 30));
+        step[i].setOrigin(-10.0f, -10.0f);
+        step[i].setFillColor(sf::Color(sf::Color::Red));
         //delete cell[y][x];
         //cell[y][x] = nullptr;
     }
@@ -205,4 +207,14 @@ void Grid::update_path(int x, int y)
         }
         path.push_back(newLoc);
     }
+}
+
+Grid::Contents Grid::getCellContents(int row, int col) const
+{
+    sf::RectangleShape* ptrCell = getCell(row, col);
+    if (ptrCell) {
+        if (ptrCell->getFillColor() == sf::Color::Magenta) return RubberWall;
+        else return Wall;
+    }
+    return Empty;
 }
