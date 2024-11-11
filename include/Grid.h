@@ -9,12 +9,15 @@
 class Grid
 {
     public:
+        enum Contents { Empty, Wall, RubberWall};
         Grid(int level);
         virtual ~Grid();
         void draw(sf::RenderWindow&);
         void generate_path();
         void print_path() const;
-        void draw_path(sf::RenderWindow&);
+        void draw_path(sf::RenderWindow& window);
+        sf::RectangleShape* getCell(int row, int col) const { return cell[row][col]; }
+        Grid::Contents getCellContents(int row, int col) const;
 
     protected:
 
