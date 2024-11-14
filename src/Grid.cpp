@@ -9,48 +9,39 @@ using namespace std;
 
 Grid::Grid(int level) : numWalls(0), step(nullptr)
 {
-    for (int r = 0; r < 40; r++)
+    for (int r = 0; r < NumRows; r++)
         for (int c = 0; c < 40; c++)
             cell[r][c] = nullptr;
 
-    std::ostringstream sout;
-    sout << level;
-    std::string filename = std::string("grid") + sout.str() + ".txt";
-    std::ifstream fin(filename);
-    std::string line;
-    for (int row=0; row < 40; row++)
-    {
-        getline(fin, line);
-        line.resize(40, ' ');
-        for (int col = 0; col < 40; col++)
-        {
-            if (line[col] == '1')
-            {
-                cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
-                cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
-                cell[row][col]->setFillColor(sf::Color(sf::Color::Black));
-                numWalls++;
-            }
-        }
+    int y = rand() % NumRows / 3 + NumRows / 3;
+    for (int x = 0; x < NumCols; x++) {
+            cell[x][y] = new sf::RectangleShape(CellSize);
+            cell[x][y]->setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
+            cell[x][y]->setFillColor(sf::Color(sf::Color::Black));
+            numWalls++;
     }
-    fin.close();
+    int x = rand() % NumCols / 3 + NumCols / 3;
+    for (int y = 0; y < NumRows; y++) {
+            cell[x][y] = new sf::RectangleShape(CellSize);
+            cell[x][y]->setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
+            cell[x][y]->setFillColor(sf::Color(sf::Color::Black));
+            numWalls++;
+    }
+
     // Add random walls
-
-
     int counter = 0;
 
     do {
         int row = rand() % 40;
         int col = rand() % 40;
         if (!(cell[row][col])) {
-            cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
-            cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
+            cell[row][col] = new sf::RectangleShape(CellSize);
+            cell[row][col]->setPosition(sf::Vector2f(WindowHorizontalOffset + row * CellWidth, WindowVerticalOffset + col * CellWidth));
             cell[row][col]->setFillColor(sf::Color(sf::Color::Black));
             numWalls++;
             counter++;
         }
     } while (counter < 100 * level);
-
 
     // Add rubber walls
     counter = 0;
@@ -60,15 +51,15 @@ Grid::Grid(int level) : numWalls(0), step(nullptr)
         int col = rand() % 40;
         if (!(cell[row][col]))
         {
-            cell[row][col] = new sf::RectangleShape(sf::Vector2f(20.0f, 20.0f));
-            cell[row][col]->setPosition(sf::Vector2f(100.0f + row * 20.0f, WindowVerticalOffset + col * 20.0f));
-            //cell[row][col]->setFillColor(sf::Color(240, 140,190));
+            cell[row][col] = new sf::RectangleShape(CellSize);
+            cell[row][col]->setPosition(sf::Vector2f(WindowHorizontalOffset + row * CellWidth, WindowVerticalOffset + col * CellWidth));
             cell[row][col]->setFillColor(sf::Color(sf::Color::Magenta));
             numWalls++;
             counter++;
         }
     }
     while (counter < 10 * level);
+    generate_path();
 }
 
 Grid::~Grid()
@@ -169,12 +160,10 @@ void Grid::generate_path()
     {
         x = path[i] / 100;
         y = path[i] % 100;
-        step[i].setRadius(2.0f);
-        step[i].setPosition(sf::Vector2f(100.0f + x * 20.0f, WindowVerticalOffset + y * 20.0f));
-        step[i].setOrigin(-10.0f, -10.0f);
+        step[i].setRadius(3.0f);
+        step[i].setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
+        step[i].setOrigin(-CellWidth / 2.0f, -CellWidth / 2.0f);
         step[i].setFillColor(sf::Color(sf::Color::Red));
-        //delete cell[y][x];
-        //cell[y][x] = nullptr;
     }
 }
 
@@ -201,7 +190,6 @@ void Grid::update_path(int x, int y)
     {
         if (cell[x][y])
         {
-            //cout << "*** Deleting cell (" << x << ',' << y << ')' << endl;
             delete cell[x][y];
             cell[x][y] = nullptr;
         }

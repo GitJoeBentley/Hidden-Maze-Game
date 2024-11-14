@@ -4,10 +4,11 @@
 #include <SFML/System.hpp>
 #include <iostream>
 
-
-Player::Player(sf::Texture& texture, sf::Vector2i loc, Grid& grd)
-    : player(texture), location(loc), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
+Player::Player(Grid& grd)
+    : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
 {
+    playerTexture.loadFromFile(PlayerImageFile);
+    player.setTexture(playerTexture);
 }
 
 Player::~Player()
@@ -17,7 +18,7 @@ Player::~Player()
 
 void Player::draw(sf::RenderWindow& window)
 {
-    player.setPosition(sf::Vector2f(100.0f + location.x * 20.0f, WindowVerticalOffset + location.y * 20.0f));
+    player.setPosition(sf::Vector2f(WindowHorizontalOffset + location.x * CellWidth, WindowVerticalOffset + location.y * CellWidth));
     window.draw(player);
 }
 
@@ -112,9 +113,8 @@ Grid::Contents Player::move(Direction direction)
             }
         }
         break;
-            default:
-                ;
-
+    default:
+        ;
     }
     if (location.x > maxRow) maxRow = location.x;
     if (location.y > maxCol) maxCol = location.y;
@@ -148,11 +148,11 @@ void Player::print_path() const
 
 void Player::draw_path(sf::RenderWindow& window) const
 {
-    sf::RectangleShape empty(sf::Vector2f(20.0f, 20.0f));
+    sf::RectangleShape empty(CellSize);
     empty.setFillColor(sf::Color(sf::Color::White));
-    sf::RectangleShape wall(sf::Vector2f(20.0f, 20.0f));
+    sf::RectangleShape wall(CellSize);
     wall.setFillColor(sf::Color(sf::Color::Black));
-    sf::RectangleShape rubberwall(sf::Vector2f(20.0f, 20.0f));
+    sf::RectangleShape rubberwall(CellSize);
     rubberwall.setFillColor(sf::Color(sf::Color::Magenta));
     Grid::Contents contents;
 
@@ -165,20 +165,20 @@ void Player::draw_path(sf::RenderWindow& window) const
         contents = grid.getCellContents(x,y);
         switch (contents)
         {
-            case Grid::Empty:
-                empty.setPosition(100.0f + x * 20.0f, WindowVerticalOffset + y * 20.0f);
-                window.draw(empty);
-                break;
-            case Grid::Wall:
-                wall.setPosition(100.0f + x * 20.0f, WindowVerticalOffset + y * 20.0f);
-                window.draw(wall);
-                break;
-            case Grid::RubberWall:
-                rubberwall.setPosition(100.0f + x * 20.0f, WindowVerticalOffset + y * 20.0f);
-                window.draw(rubberwall);
-                break;
-            default:
-                ;
+        case Grid::Empty:
+            empty.setPosition(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth);
+            window.draw(empty);
+            break;
+        case Grid::Wall:
+            wall.setPosition(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth);
+            window.draw(wall);
+            break;
+        case Grid::RubberWall:
+            rubberwall.setPosition(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth);
+            window.draw(rubberwall);
+            break;
+        default:
+            ;
         }
     }
 }
