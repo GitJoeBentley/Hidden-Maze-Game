@@ -9,7 +9,8 @@ class Player : public sf::RectangleShape
 
 {
     public:
-        Player(sf::Texture& texture, sf::Vector2i loc, Grid& grid);
+        //Player(sf::Texture& texture, sf::Vector2i loc, Grid& grid);
+        Player(Grid& grid);
         virtual ~Player();
         void draw(sf::RenderWindow& window);
         Grid::Contents move(Direction);
@@ -20,13 +21,15 @@ class Player : public sf::RectangleShape
         void print_path() const;
         void draw_path(sf::RenderWindow& window) const;
         int getCol() const { return location.x; }
+        sf::Sprite& getPlayer() { return player; }
 
     protected:
 
     private:
-        sf::Sprite player;
         sf::Vector2i location;
         Grid& grid;
+        sf::Texture playerTexture;
+        sf::Sprite player;
         unsigned bruises;
         unsigned score;
         int maxRow;
