@@ -199,6 +199,7 @@ void Grid::update_path(int x, int y)
 
 Grid::Contents Grid::getCellContents(int row, int col) const
 {
+    if (row == 40 and col == 39) return Win;
     sf::RectangleShape* ptrCell = getCell(row, col);
     if (ptrCell) {
         if (ptrCell->getFillColor() == sf::Color::Magenta) return RubberWall;

@@ -24,9 +24,9 @@ int main()
     string name = "Joe";
 
     //Grid grid(level);
-    GameBoard game(name, level);
-    Player player(game.getGrid());
     Sounds sounds;
+    GameBoard game(name, level, sounds);
+    Player player(game.getGrid());
 
     Grid::Contents cellContents;
     game.flash(player);
@@ -35,6 +35,7 @@ int main()
     sf::Clock clock;
     int countdown = 60;
     int timer;
+    GameStatus status = NotStarted;
 
     // Run the program as long as the window is open
     while (game.getWindow().isOpen())
@@ -48,29 +49,47 @@ int main()
             {
                 game.getWindow().close();
             }
-            else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
-            {
-                game.getWindow().close();
-            }
+            else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) game.getWindow().close();
             else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game.toggleDisplayMaze();
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))    {
+                game.flash(player);
+                player.decrementScore();
+                player.incrementBruises();
+            }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = player.move(Up);
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = player.move(Down);
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = player.move(Left);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) cellContents = player.move(Right);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                if (status == NotStarted) status = Active;
+                cellContents = player.move(Right);
+            }
             else break;
 
             if (cellContents == Grid::Empty) sounds.getStepSound().play();
             if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
             if (cellContents == Grid::RubberWall) sounds.getRubberSound().play();
+            if (cellContents == Grid::Win) sounds.getWinSound().play();
         }
         timer = clock.getElapsedTime().asSeconds();
         if (timer > 0) {
             countdown--;
             clock.restart();
         }
-        //std::cout << countdown << std::endl;
 
-        game.draw_and_display(player, countdown);
+        // loss
+        if (countdown <= 0 or player.getBruises() >= 50) {
+            status = Loss;
+            game.draw_and_display(player, countdown, Loss);
+            break;
+        }
+        // win
+        if (cellContents == Grid::Win)
+        {
+            status = Win;
+            game.draw_and_display(player, countdown, Win);
+            break;
+        }
+        game.draw_and_display(player, countdown, Active);
     }
 
     return 0;

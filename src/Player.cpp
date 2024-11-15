@@ -5,7 +5,7 @@
 #include <iostream>
 
 Player::Player(Grid& grd)
-    : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
+: location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
@@ -30,7 +30,7 @@ Grid::Contents Player::move(Direction direction)
     switch (direction)
     {
     case Up:
-        if (location.y > 0)
+        if (newLocation.y > 0)
         {
             newLocation.y--;
             cellContents = grid.getCellContents(newLocation.x, newLocation.y);
@@ -93,6 +93,15 @@ Grid::Contents Player::move(Direction direction)
         }
         break;
     case Right:
+        if (newLocation.x == 39 && newLocation.y == 39)
+        {
+            // It's a win
+            newLocation.x++;
+            score++;
+            location.x++;
+            path.push_back(100 * newLocation.x + newLocation.y);
+            return Grid::Win;
+        }
         if (newLocation.x < 39)
         {
             newLocation.x++;

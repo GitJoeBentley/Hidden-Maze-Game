@@ -8,10 +8,12 @@ using namespace sf;
 
 sf::Font GameBoard::titleFont;
 sf::Font GameBoard::statusFont;
+sf::Font GameBoard::defaultFont;
 
-GameBoard::GameBoard(std::string nam, int lev)
+GameBoard::GameBoard(std::string nam, int lev, Sounds& sound)
     : name(nam),
       level(lev),
+      sounds(sound),
       window(sf::VideoMode(GameSize.x, GameSize.y),nam+"'s Hidden Maze Game",sf::Style::Close),
       grid(lev),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
@@ -34,14 +36,19 @@ GameBoard::GameBoard(std::string nam, int lev)
     arrow1.setPosition(WindowHorizontalOffset - 2 * CellWidth, WindowVerticalOffset + 0 * CellWidth);
     arrow2.setPosition(WindowHorizontalOffset + 41 * CellWidth, WindowVerticalOffset + 39 * CellWidth);
 
-    titleFont.loadFromFile(titleFontFile);
-    statusFont.loadFromFile(statusFontFile);
+    titleFont.loadFromFile(TitleFontFile);
+    statusFont.loadFromFile(StatusFontFile);
+    defaultFont.loadFromFile(DefaultFontFile);
+
     titleText.setFont(titleFont);
+    statusText.setFont(statusFont);
+    defaultText.setFont(defaultFont);
+
     titleText.setCharacterSize(36);
     titleText.setPosition(WindowHorizontalOffset, CellWidth);
     titleText.setFillColor(sf::Color::Yellow);
     titleText.setString(name + string("'s Hidden Maze Game"));
-    statusText.setFont(statusFont);
+
     statusText.setCharacterSize(24);
     statusText.setPosition(800.0f, 25.0f);
     statusText.setFillColor(sf::Color::Yellow);
@@ -53,9 +60,10 @@ GameBoard::~GameBoard()
     //dtor
 }
 
-void GameBoard::draw_and_display(Player& player, int countdown)
+void GameBoard::draw_and_display(Player& player, int countdown, GameStatus status)
 {
     window.clear();
+
     window.draw(border);
     if (player.getCol() == -1)
     {
@@ -78,6 +86,34 @@ void GameBoard::draw_and_display(Player& player, int countdown)
     else border.setFillColor(sf::Color(sf::Color::Blue));
 
     if (player.getPath().size() > 1) player.draw_path(window);
+    if (status == Loss)
+    {
+        statusText.setFillColor(sf::Color::Red);
+        defaultText.setCharacterSize(64);
+        defaultText.setPosition(340.0f, 460.0f);
+        defaultText.setFillColor(sf::Color::Red);
+        defaultText.setStyle(sf::Text::Bold);
+        defaultText.setString(string("Game Over"));
+        window.draw(defaultText);
+        sounds.getBooSound().play();
+        player.draw(window);
+        window.display();
+        sf::sleep(sf::Time(sf::seconds(4.0f)));
+    }
+    if (status == Win)
+    {
+        statusText.setFillColor(sf::Color::Green);
+        defaultText.setCharacterSize(64);
+        defaultText.setPosition(340.0f, 460.0f);
+        defaultText.setFillColor(sf::Color::Green);
+        defaultText.setStyle(sf::Text::Bold);
+        defaultText.setString(string("Game Over"));
+        window.draw(defaultText);
+        sounds.getWinSound().play();
+        player.draw(window);
+        window.display();
+        sf::sleep(sf::Time(sf::seconds(4.0f)));
+    }
     player.draw(window);
     window.display();
 }
@@ -91,7 +127,7 @@ void GameBoard::flash(Player& player)
     {
         elapsedTime = clock.getElapsedTime().asMilliseconds();
         if (elapsedTime > 800.0f) break;
-        draw_and_display(player, 0);
+        draw_and_display(player, 0, Active);
     }
     toggleDisplayMaze();
 }
