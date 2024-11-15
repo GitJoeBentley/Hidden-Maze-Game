@@ -22,6 +22,8 @@ class Player : public sf::RectangleShape
         void draw_path(sf::RenderWindow& window) const;
         int getCol() const { return location.x; }
         sf::Sprite& getPlayer() { return player; }
+        void incrementBruises() { bruises++; }
+        void decrementScore() { score--; }
 
     protected:
 
@@ -30,8 +32,8 @@ class Player : public sf::RectangleShape
         Grid& grid;
         sf::Texture playerTexture;
         sf::Sprite player;
-        unsigned bruises;
-        unsigned score;
+        int bruises;
+        int score;
         int maxRow;
         int maxCol;
         std::vector<int> path;

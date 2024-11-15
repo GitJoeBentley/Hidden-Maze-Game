@@ -14,10 +14,15 @@ const float WindowHorizontalOffset = 100.0f;
 const float WindowVerticalOffset = 150.0f;
 const std::string PlayerImageFile = "c:/temp/player.jpg";
 const std::string ArrowImageFile = "c:/temp/arrow.jpg";
-const std::string rubberSoundFile = "c:/temp/boing.wav";
-const std::string stepSoundFile = "c:/temp/step.wav";
-const std::string hitWallSoundFile = "c:/temp/slam.wav";
-const std::string titleFontFile = "c:/temp/ITCKRIST.TTF";
-const std::string statusFontFile = "c:/temp/courbd.ttf";
+
+const std::string RubberSoundFile = "c:/temp/boing.wav";
+const std::string StepSoundFile = "c:/temp/step.wav";
+const std::string HitWallSoundFile = "c:/temp/slam.wav";
+const std::string booSoundFile = "c:/temp/boo.wav";
+const std::string winSoundFile = "c:/temp/win.wav";
+
+const std::string TitleFontFile = "c:/temp/ITCKRIST.TTF";
+const std::string StatusFontFile = "c:/temp/courbd.ttf";
+const std::string DefaultFontFile = "c:/temp/arial.ttf";
 
 #endif
