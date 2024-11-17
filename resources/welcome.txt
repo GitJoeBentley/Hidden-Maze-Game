@@ -1,0 +1,16 @@
+Hidden Maze Game
+
+The goal of this game is to traverse a hidden maze starting in the upper left corner and 
+proceeding to the lower right corner.  Along the way you will collide with solid walls (black)
+and rubber walls (magenta).  The solid walls will give you a bruise and you cannot proceed 
+through them.  A rubber wall will bounce you back to a random location.
+
+You will lose the game if you take more than 60 seconds to traverse the maze or
+if you receive 50 bruises.  Points are awarded as you progress through the maze.
+
+The maze is flashed for 1 second at the beginning of the game.  You can also request a 1 second 
+flash using the F1 key.  That will cost you one bruise and one point.  The flash will also cause 
+one solid wall and one rubber wall to be added to the maze, and you will be bounced back to some
+random location.
+
+Good luck.
