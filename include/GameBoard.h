@@ -7,6 +7,7 @@
 #include "Grid.h"
 #include "Player.h"
 #include "Sounds.h"
+#include "HighScores.h"
 #include "Constants.h"
 #include "Types.h"
 
@@ -14,7 +15,7 @@ class GameBoard
 {
 public:
     //GameBoard(std::string name, int level, sf::Texture& arrowTexture);
-    GameBoard(std::string name, int level, Sounds& sounds);
+    GameBoard(sf::RenderWindow& wind, Sounds& sounds, std::string& name);
     virtual ~GameBoard();
     void draw_and_display(Player& player, int countdown, GameStatus status);
     sf::RenderWindow& getWindow()
@@ -40,10 +41,9 @@ public:
     static sf::Font defaultFont;
 
 private:
-    std::string name;
-    int level;
+    sf::RenderWindow& window;
     Sounds& sounds;
-    sf::RenderWindow window;
+    std::string& name;
     Grid grid;
     //Player player(const sf::Texture& playerTexture, sf::Vector2i loc(-1,0));
     sf::RectangleShape border;

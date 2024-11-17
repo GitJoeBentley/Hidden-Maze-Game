@@ -24,5 +24,6 @@ const std::string winSoundFile = "c:/temp/win.wav";
 const std::string TitleFontFile = "c:/temp/ITCKRIST.TTF";
 const std::string StatusFontFile = "c:/temp/courbd.ttf";
 const std::string DefaultFontFile = "c:/temp/arial.ttf";
+const std::string WelcomeFile = "c:/temp/welcome.txt";
 
 #endif

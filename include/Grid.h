@@ -10,7 +10,7 @@ class Grid
 {
     public:
         enum Contents { Empty, Wall, RubberWall, Win};
-        Grid(int level);
+        Grid();
         virtual ~Grid();
         void draw(sf::RenderWindow&);
         void generate_path();
@@ -18,6 +18,9 @@ class Grid
         void draw_path(sf::RenderWindow& window);
         sf::RectangleShape* getCell(int row, int col) const { return cell[row][col]; }
         Grid::Contents getCellContents(int row, int col) const;
+        std::vector<int>& getPath() { return path; }
+        bool locationIsInThePath(int x, int y);
+        void AddARandomWall(const std::string& = "solid");
 
     protected:
 
