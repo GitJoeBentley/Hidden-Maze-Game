@@ -7,59 +7,77 @@
 using namespace std;
 
 
-Grid::Grid(int level) : numWalls(0), step(nullptr)
+Grid::Grid() : numWalls(0), step(nullptr)
 {
     for (int r = 0; r < NumRows; r++)
         for (int c = 0; c < 40; c++)
             cell[r][c] = nullptr;
 
+    // Straight-line walls
     int y = rand() % NumRows / 3 + NumRows / 3;
-    for (int x = 0; x < NumCols; x++) {
-            cell[x][y] = new sf::RectangleShape(CellSize);
-            cell[x][y]->setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
-            cell[x][y]->setFillColor(sf::Color(sf::Color::Black));
-            numWalls++;
+    for (int x = 0; x < NumCols; x++)
+    {
+        cell[x][y] = new sf::RectangleShape(CellSize);
+        cell[x][y]->setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
+        cell[x][y]->setFillColor(sf::Color(sf::Color::Black));
+        numWalls++;
     }
     int x = rand() % NumCols / 3 + NumCols / 3;
-    for (int y = 0; y < NumRows; y++) {
-            cell[x][y] = new sf::RectangleShape(CellSize);
-            cell[x][y]->setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
-            cell[x][y]->setFillColor(sf::Color(sf::Color::Black));
-            numWalls++;
+    for (int y = 0; y < NumRows; y++)
+    {
+        cell[x][y] = new sf::RectangleShape(CellSize);
+        cell[x][y]->setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
+        cell[x][y]->setFillColor(sf::Color(sf::Color::Black));
+        numWalls++;
     }
 
     // Add random walls
     int counter = 0;
 
-    do {
-        int row = rand() % 40;
-        int col = rand() % 40;
-        if (!(cell[row][col])) {
-            cell[row][col] = new sf::RectangleShape(CellSize);
-            cell[row][col]->setPosition(sf::Vector2f(WindowHorizontalOffset + row * CellWidth, WindowVerticalOffset + col * CellWidth));
-            cell[row][col]->setFillColor(sf::Color(sf::Color::Black));
-            numWalls++;
-            counter++;
-        }
-    } while (counter < 100 * level);
+    do
+    {
+        AddARandomWall();
+        counter++;
+    }
+    while (counter < 100);
 
     // Add rubber walls
     counter = 0;
     do
     {
-        int row = rand() % 40;
-        int col = rand() % 40;
-        if (!(cell[row][col]))
-        {
-            cell[row][col] = new sf::RectangleShape(CellSize);
-            cell[row][col]->setPosition(sf::Vector2f(WindowHorizontalOffset + row * CellWidth, WindowVerticalOffset + col * CellWidth));
-            cell[row][col]->setFillColor(sf::Color(sf::Color::Magenta));
-            numWalls++;
-            counter++;
-        }
+        AddARandomWall("rubber");
+        counter++;
     }
-    while (counter < 10 * level);
+    while (counter < 10);
+
     generate_path();
+}
+
+void Grid::AddARandomWall(const std::string& type)
+{
+    int row, col;
+    // Make sure location is empty and not in the path
+    do
+    {
+        row = rand() % 40;
+        col = rand() % 40;
+    }
+    while (locationIsInThePath(col, row) && !(cell[row][col]));
+
+    cell[row][col] = new sf::RectangleShape(CellSize);
+    cell[row][col]->setPosition(sf::Vector2f(WindowHorizontalOffset + row * CellWidth, WindowVerticalOffset + col * CellWidth));
+    if (type == "solid")
+    {
+        cell[row][col]->setFillColor(sf::Color(sf::Color::Black));
+        numWalls++;
+    }
+    else
+    {
+        cell[row][col]->setFillColor(sf::Color(sf::Color::Magenta));
+        //cout << "Random rubber wall added at " << col << ',' << row << endl;
+        numWalls++;
+    }
+    //cout << "Random wall added at " << col << ',' << row << endl;
 }
 
 Grid::~Grid()
@@ -197,11 +215,26 @@ void Grid::update_path(int x, int y)
     }
 }
 
+bool Grid::locationIsInThePath(int x, int y)
+{
+    int temp = 100 * x + y;
+    std::vector<int>::iterator it;
+    it = find(path.begin(), path.end(), temp);
+
+    bool inThePath = it != path.end();
+    //cout << x << ' ' << y << ' ' << temp << ' ' << boolalpha << inThePath << endl;
+    if (inThePath) return true;
+
+    return false;
+}
+
+
 Grid::Contents Grid::getCellContents(int row, int col) const
 {
     if (row == 40 and col == 39) return Win;
     sf::RectangleShape* ptrCell = getCell(row, col);
-    if (ptrCell) {
+    if (ptrCell)
+    {
         if (ptrCell->getFillColor() == sf::Color::Magenta) return RubberWall;
         else return Wall;
     }

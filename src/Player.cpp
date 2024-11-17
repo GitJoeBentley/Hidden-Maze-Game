@@ -3,9 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <iostream>
+#include <algorithm>
+using namespace std;
 
 Player::Player(Grid& grd)
-: location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
+    : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
@@ -191,3 +193,5 @@ void Player::draw_path(sf::RenderWindow& window) const
         }
     }
 }
+
+

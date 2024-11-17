@@ -1,5 +1,7 @@
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "SFML/graphics.hpp"
 #include "GameBoard.h"
 #include "Constants.h"
@@ -10,12 +12,11 @@ sf::Font GameBoard::titleFont;
 sf::Font GameBoard::statusFont;
 sf::Font GameBoard::defaultFont;
 
-GameBoard::GameBoard(std::string nam, int lev, Sounds& sound)
-    : name(nam),
-      level(lev),
+GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
+    : window(wind),
       sounds(sound),
-      window(sf::VideoMode(GameSize.x, GameSize.y),nam+"'s Hidden Maze Game",sf::Style::Close),
-      grid(lev),
+      name(name_),
+      grid(),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
       door1(CellSize),door2(CellSize),
       displayMaze(false)
@@ -52,7 +53,10 @@ GameBoard::GameBoard(std::string nam, int lev, Sounds& sound)
     statusText.setCharacterSize(24);
     statusText.setPosition(800.0f, 25.0f);
     statusText.setFillColor(sf::Color::Yellow);
-    statusText.setString(string("Level ") + to_string(level) + "\nBruises 0" + "\nScore 0");
+    statusText.setString(string(" \n\nBruises 0") + "\nScore 0");
+
+    defaultText.setStyle(sf::Text::Bold);
+
 }
 
 GameBoard::~GameBoard()
@@ -65,18 +69,12 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
     window.clear();
 
     window.draw(border);
-    if (player.getCol() == -1)
-    {
-        window.draw(door1);
-        window.draw(arrow1);
-    }
-
     window.draw(door2);
     window.draw(arrow2);
     statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(player.getBruises()) + "\nScore " + std::to_string(player.getScore()));
     window.draw(statusText);
     window.draw(titleText);
-
+    if (player.getPath().size() > 1) player.draw_path(window);
     if (displayMaze)
     {
         border.setFillColor(sf::Color(sf::Color::Cyan));
@@ -85,34 +83,46 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
     }
     else border.setFillColor(sf::Color(sf::Color::Blue));
 
-    if (player.getPath().size() > 1) player.draw_path(window);
-    if (status == Loss)
+    switch (status)
     {
+    case Active:
+        break;
+    case Loss:
         statusText.setFillColor(sf::Color::Red);
         defaultText.setCharacterSize(64);
         defaultText.setPosition(340.0f, 460.0f);
         defaultText.setFillColor(sf::Color::Red);
-        defaultText.setStyle(sf::Text::Bold);
         defaultText.setString(string("Game Over"));
         window.draw(defaultText);
         sounds.getBooSound().play();
         player.draw(window);
         window.display();
         sf::sleep(sf::Time(sf::seconds(4.0f)));
-    }
-    if (status == Win)
-    {
+        break;
+    case Win:
         statusText.setFillColor(sf::Color::Green);
         defaultText.setCharacterSize(64);
         defaultText.setPosition(340.0f, 460.0f);
         defaultText.setFillColor(sf::Color::Green);
-        defaultText.setStyle(sf::Text::Bold);
         defaultText.setString(string("Game Over"));
         window.draw(defaultText);
         sounds.getWinSound().play();
         player.draw(window);
         window.display();
         sf::sleep(sf::Time(sf::seconds(4.0f)));
+        break;
+    case NotStarted:
+        statusText.setFillColor(sf::Color::Green);
+        defaultText.setCharacterSize(48);
+        defaultText.setPosition(125.0f, 300.0f);
+        defaultText.setFillColor(sf::Color::White);
+        defaultText.setString(string("Press the Right Arrow key to start"));
+        window.draw(defaultText);
+        window.draw(door1);
+        window.draw(arrow1);
+        break;
+    default:
+        ;
     }
     player.draw(window);
     window.display();
