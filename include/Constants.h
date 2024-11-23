@@ -12,18 +12,23 @@ const  sf::Vector2f CellSize(CellWidth, CellWidth);
 const float GameWindowSize = 40 * CellWidth;
 const float WindowHorizontalOffset = 100.0f;
 const float WindowVerticalOffset = 150.0f;
-const std::string PlayerImageFile = "c:/temp/player.jpg";
-const std::string ArrowImageFile = "c:/temp/arrow.jpg";
 
-const std::string RubberSoundFile = "c:/temp/boing.wav";
-const std::string StepSoundFile = "c:/temp/step.wav";
-const std::string HitWallSoundFile = "c:/temp/slam.wav";
-const std::string booSoundFile = "c:/temp/boo.wav";
-const std::string winSoundFile = "c:/temp/win.wav";
-
-const std::string TitleFontFile = "c:/temp/ITCKRIST.TTF";
-const std::string StatusFontFile = "c:/temp/courbd.ttf";
-const std::string DefaultFontFile = "c:/temp/arial.ttf";
-const std::string WelcomeFile = "c:/temp/welcome.txt";
+const std::string ResourcePath = "resources/";
+const std::string PlayerImageFile = ResourcePath + "player.jpg";
+const std::string ArrowImageFile = ResourcePath + "arrow.jpg";
+const std::string MusicStartFile = ResourcePath + "BlueSuedeShoes.ogg";
+const std::string RubberSoundFile = ResourcePath + "boing.wav";
+const std::string StepSoundFile = ResourcePath + "step.wav";
+const std::string HitWallSoundFile = ResourcePath + "slam.wav";
+const std::string BooSoundFile = ResourcePath + "boo.wav";
+const std::string WinSoundFile = ResourcePath + "win.wav";
+const std::string BellSoundFile = ResourcePath + "bell.wav";
+const std::string ExplosionSoundFile = ResourcePath + "explosion.wav";
+const std::string FartSoundFile = ResourcePath + "fart.wav";
+const std::string LightSoundFile = ResourcePath + "light.wav";
+const std::string TitleFontFile = ResourcePath + "ITCKRIST.TTF";
+const std::string StatusFontFile = ResourcePath + "courbd.ttf";
+const std::string DefaultFontFile = ResourcePath + "arial.ttf";
+const std::string WelcomeFile = ResourcePath + "welcome.txt";
 
 #endif

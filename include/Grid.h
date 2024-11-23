@@ -21,6 +21,7 @@ class Grid
         std::vector<int>& getPath() { return path; }
         bool locationIsInThePath(int x, int y);
         void AddARandomWall(const std::string& = "solid");
+        void clearCell(int x, int y);
 
     protected:
 

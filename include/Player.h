@@ -11,7 +11,6 @@ class Player : public sf::RectangleShape
     public:
         //Player(sf::Texture& texture, sf::Vector2i loc, Grid& grid);
         Player(Grid& grid);
-        virtual ~Player();
         void draw(sf::RenderWindow& window);
         Grid::Contents move(Direction);
         unsigned getBruises() const { return bruises; }
@@ -26,6 +25,8 @@ class Player : public sf::RectangleShape
         sf::Sprite& getPlayer() { return player; }
         void incrementBruises() { bruises++; }
         void decrementScore() { score--; }
+        void explodeBomb();
+        void light();
 
     protected:
 
