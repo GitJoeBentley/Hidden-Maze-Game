@@ -27,6 +27,8 @@ int main()
     srand(static_cast<unsigned>(time(0)));
     sf::RenderWindow window(sf::VideoMode(GameSize.x, GameSize.y),"Hidden Maze Game",sf::Style::Close);
     window.setFramerateLimit(60);
+    static bool bombUsed = false;
+    static bool lightUsed = false;
 
     Sounds sounds;
     HighScores highScores;
@@ -52,13 +54,12 @@ int main()
     int countdown = 60;
     int timer;
     GameStatus status = NotStarted;
-
+sf::Event event;
     // Run the program as long as the window is open
     while (game.getWindow().isOpen())
     {
         // Check all the window's events that were triggered
         // since the last iteration of the main loop.
-        sf::Event event;
         while (game.getWindow().pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
@@ -67,7 +68,7 @@ int main()
             }
             else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) game.getWindow().close();
             else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game.toggleDisplayMaze();
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F1))
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
             {
                 game.flash(player);
                 player.decrementScore();
@@ -80,8 +81,30 @@ int main()
                 player.bounce(player.getLocation());
                 sounds.getRubberSound().play();
 
-
             }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) game.getWindow().close();
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))   // bomb
+            {
+                if (!bombUsed)
+                {
+                    sounds.getExplosionSound().play();
+                    player.explodeBomb();
+                    bombUsed = true;
+                    break;
+                }
+                else
+                {
+                    sounds.getFartSound().play();
+                    break;
+                }
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) && lightUsed == false)   // bomb
+            {
+                sounds.getLightSound().play();
+                player.light();
+                lightUsed = true;
+            }
+
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = player.move(Up);
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = player.move(Down);
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = player.move(Left);
@@ -91,6 +114,7 @@ int main()
                 cellContents = player.move(Right);
             }
             else break;
+
 
             if (cellContents == Grid::Empty) sounds.getStepSound().play();
             if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
@@ -123,10 +147,16 @@ int main()
             break;
         }
         game.draw_and_display(player, countdown, status);
-        if (status == Win) break;
+        if (status == Win)
+        {
+            highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
+            highScores.WriteHighScoresFile();
+            break;
+        }
     }
-    highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
-    highScores.WriteHighScoresFile();
+
+    //highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
+    //highScores.WriteHighScoresFile();
 
 
     return 0;
@@ -162,7 +192,7 @@ std::string welcome(sf::RenderWindow& window, const HighScores& highScores)
     highScoresText.setFont(instructionsFont);
     highScoresText.setCharacterSize(16); // in pixels, not points!
     highScoresText.setFillColor(sf::Color::Green);
-    highScoresText.setPosition(150.0f,500.0f);
+    highScoresText.setPosition(150.0f,550.0f);
 
     // Write High Scores
     std::ostringstream sout;
@@ -301,5 +331,3 @@ char getKey()
         return  '\b';
     return ' ';
 }
-
-

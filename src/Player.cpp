@@ -7,15 +7,10 @@
 using namespace std;
 
 Player::Player(Grid& grd)
-    : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(0)
+    : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(-1)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
-}
-
-Player::~Player()
-{
-    //dtor
 }
 
 void Player::draw(sf::RenderWindow& window)
@@ -127,9 +122,23 @@ Grid::Contents Player::move(Direction direction)
     default:
         ;
     }
-    if (location.x > maxRow) maxRow = location.x;
-    if (location.y > maxCol) maxCol = location.y;
-    score = maxRow + maxCol;
+    if (location.x > maxCol)
+    {
+        maxCol = location.x;
+        score += 2;
+    }
+    else if (location.y > maxRow)
+    {
+        maxRow = location.y;
+        score += 2;
+    }
+    else
+    {
+        int temp = 100 * location.x + location.y;
+        std::vector<int>::iterator it;
+        it = find(path.begin(), path.end(), temp);
+        if (it == path.end()) score++;
+    }
     path.push_back(100 * newLocation.x + newLocation.y);
     return cellContents;
 }
@@ -194,4 +203,30 @@ void Player::draw_path(sf::RenderWindow& window) const
     }
 }
 
+void Player::explodeBomb()
+{
+    for (int x = location.x - 1; x <= location.x + 1; x++)
+    {
+        if (x < 0 || x >= 40) continue;
+        for (int y = location.y - 1; y <= location.y + 1; y++)
+        {
+            if (y < 0 || y >= 40 || (x == location.x && y == location.y)) continue;
+            //cout << "*** " << x << ',' << y << endl;
+            grid.clearCell(x,y);
+        }
+    }
+}
+
+void Player::light()
+{
+    for (int x = location.x - 1; x <= location.x + 1; x++)
+    {
+        if (x < 0 || x >= 40) continue;
+        for (int y = location.y - 1; y <= location.y + 1; y++)
+        {
+            if (y < 0 || y >= 40) continue;
+            path.push_back(100 * x + y);
+        }
+    }
+}
 

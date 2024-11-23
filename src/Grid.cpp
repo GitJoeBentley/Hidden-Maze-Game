@@ -185,6 +185,16 @@ void Grid::generate_path()
     }
 }
 
+void Grid::clearCell(int x, int y)
+{
+    if (cell[x][y])
+    {
+        delete cell[x][y];
+        cell[x][y] = nullptr;
+    }
+}
+
+
 void Grid::print_path() const
 {
     for (auto loc : path)
@@ -208,8 +218,7 @@ void Grid::update_path(int x, int y)
     {
         if (cell[x][y])
         {
-            delete cell[x][y];
-            cell[x][y] = nullptr;
+            clearCell(x,y);
         }
         path.push_back(newLoc);
     }
@@ -217,15 +226,7 @@ void Grid::update_path(int x, int y)
 
 bool Grid::locationIsInThePath(int x, int y)
 {
-    int temp = 100 * x + y;
-    std::vector<int>::iterator it;
-    it = find(path.begin(), path.end(), temp);
-
-    bool inThePath = it != path.end();
-    //cout << x << ' ' << y << ' ' << temp << ' ' << boolalpha << inThePath << endl;
-    if (inThePath) return true;
-
-    return false;
+    return find(path.begin(), path.end(), 100 * x + y) != path.end();;
 }
 
 

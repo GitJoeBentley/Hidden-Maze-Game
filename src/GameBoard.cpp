@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "SFML/graphics.hpp"
+#include "SFML/Graphics.hpp"
 #include "GameBoard.h"
 #include "Constants.h"
 using namespace std;
@@ -89,10 +89,10 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
         break;
     case Loss:
         statusText.setFillColor(sf::Color::Red);
-        defaultText.setCharacterSize(64);
-        defaultText.setPosition(340.0f, 460.0f);
+        defaultText.setCharacterSize(48);
+        defaultText.setPosition(300.0f, 460.0f);
         defaultText.setFillColor(sf::Color::Red);
-        defaultText.setString(string("Game Over"));
+        defaultText.setString(string("Too bad, you lose"));
         window.draw(defaultText);
         sounds.getBooSound().play();
         player.draw(window);
@@ -102,9 +102,9 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
     case Win:
         statusText.setFillColor(sf::Color::Green);
         defaultText.setCharacterSize(64);
-        defaultText.setPosition(340.0f, 460.0f);
+        defaultText.setPosition(350.0f, 460.0f);
         defaultText.setFillColor(sf::Color::Green);
-        defaultText.setString(string("Game Over"));
+        defaultText.setString(string("You won!!!!!"));
         window.draw(defaultText);
         sounds.getWinSound().play();
         player.draw(window);
@@ -131,7 +131,7 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
 void GameBoard::flash(Player& player)
 {
     Clock clock;
-    float elapsedTime;
+    int elapsedTime;
     toggleDisplayMaze();
     while (window.isOpen())
     {
