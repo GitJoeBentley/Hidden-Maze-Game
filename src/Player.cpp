@@ -21,6 +21,11 @@ void Player::draw(sf::RenderWindow& window)
 
 Grid::Contents Player::move(Direction direction)
 {
+    if ((location.y == 0 && direction == Up) ||
+        (location.x == 0 && direction == Left) ||
+        (location.y == 39 && direction == Down) ||
+        (location.x == 39 && location.y != 39 && direction == Right))
+          return Grid::OutOfBounds;
     sf::Vector2i newLocation(location);
     Grid::Contents cellContents;
     if (location.x == -1 && direction != Right) return Grid::Empty;
@@ -213,6 +218,7 @@ void Player::explodeBomb()
             if (y < 0 || y >= 40 || (x == location.x && y == location.y)) continue;
             //cout << "*** " << x << ',' << y << endl;
             grid.clearCell(x,y);
+            path.push_back(100 * x + y);
         }
     }
 }

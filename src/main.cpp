@@ -46,15 +46,12 @@ int main()
     music.setVolume(20);
     music.play();
 
-
-
-
     //GAME CLOCK & TIMER
     sf::Clock clock;
     int countdown = 60;
     int timer;
     GameStatus status = NotStarted;
-sf::Event event;
+    sf::Event event;
     // Run the program as long as the window is open
     while (game.getWindow().isOpen())
     {
@@ -113,14 +110,15 @@ sf::Event event;
                 if (status == NotStarted) status = Active;
                 cellContents = player.move(Right);
             }
-            else break;
-
-
+            else {}
+            if (cellContents == Grid::OutOfBounds) sounds.getFartSound().play();
             if (cellContents == Grid::Empty) sounds.getStepSound().play();
             if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
             if (cellContents == Grid::RubberWall) sounds.getRubberSound().play();
             if (cellContents == Grid::Win) sounds.getWinSound().play();
         }
+
+
         if (status != NotStarted)
         {
             timer = clock.getElapsedTime().asSeconds();
@@ -155,8 +153,8 @@ sf::Event event;
         }
     }
 
-    //highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
-    //highScores.WriteHighScoresFile();
+    highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
+    highScores.WriteHighScoresFile();
 
 
     return 0;
