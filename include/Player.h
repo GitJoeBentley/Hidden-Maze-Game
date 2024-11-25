@@ -6,10 +6,8 @@
 #include <vector>
 
 class Player : public sf::RectangleShape
-
 {
     public:
-        //Player(sf::Texture& texture, sf::Vector2i loc, Grid& grid);
         Player(Grid& grid);
         void draw(sf::RenderWindow& window);
         Grid::Contents move(Direction);
