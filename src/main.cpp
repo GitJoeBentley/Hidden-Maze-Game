@@ -42,7 +42,7 @@ int main()
 
     // Music
     sf::Music music;
-    music.openFromFile("c:/temp/BlueSuedeShoes.ogg");
+    music.openFromFile(MusicStartFile);
     music.setVolume(20);
     music.play();
 
@@ -110,15 +110,20 @@ int main()
                 if (status == NotStarted) status = Active;
                 cellContents = player.move(Right);
             }
-            else {}
-            if (cellContents == Grid::OutOfBounds) sounds.getFartSound().play();
+            else break;
+
+
             if (cellContents == Grid::Empty) sounds.getStepSound().play();
             if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
             if (cellContents == Grid::RubberWall) sounds.getRubberSound().play();
-            if (cellContents == Grid::Win) sounds.getWinSound().play();
+            if (cellContents == Grid::OutOfBounds) sounds.getFartSound().play();
+            if (cellContents == Grid::Win)
+            {
+                sounds.getWinSound().play();
+                status = Win;
+                break;
+            }
         }
-
-
         if (status != NotStarted)
         {
             timer = clock.getElapsedTime().asSeconds();
@@ -137,25 +142,17 @@ int main()
             game.draw_and_display(player, countdown, Loss);
             break;
         }
-        // win
-        if (cellContents == Grid::Win)
-        {
-            status = Win;
-            game.draw_and_display(player, countdown, Win);
-            break;
-        }
+
         game.draw_and_display(player, countdown, status);
+
         if (status == Win)
         {
             highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
             highScores.WriteHighScoresFile();
             break;
         }
+
     }
-
-    highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
-    highScores.WriteHighScoresFile();
-
 
     return 0;
 }

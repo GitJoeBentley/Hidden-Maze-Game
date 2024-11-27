@@ -224,7 +224,7 @@ void Grid::update_path(int x, int y)
     }
 }
 
-bool Grid::locationIsInThePath(int x, int y)
+bool Grid::locationIsInThePath(int x, int y) const
 {
     return find(path.begin(), path.end(), 100 * x + y) != path.end();;
 }

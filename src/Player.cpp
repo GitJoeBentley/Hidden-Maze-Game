@@ -22,111 +22,60 @@ void Player::draw(sf::RenderWindow& window)
 Grid::Contents Player::move(Direction direction)
 {
     if ((location.y == 0 && direction == Up) ||
-        (location.x == 0 && direction == Left) ||
-        (location.y == 39 && direction == Down) ||
-        (location.x == 39 && location.y != 39 && direction == Right))
-          return Grid::OutOfBounds;
+            (location.x == 0 && direction == Left) ||
+            (location.y == 39 && direction == Down) ||
+            (location.x == 39 && location.y != 39 && direction == Right))
+        return Grid::OutOfBounds;
     sf::Vector2i newLocation(location);
-    Grid::Contents cellContents;
     if (location.x == -1 && direction != Right) return Grid::Empty;
     switch (direction)
     {
     case Up:
-        if (newLocation.y > 0)
-        {
-            newLocation.y--;
-            cellContents = grid.getCellContents(newLocation.x, newLocation.y);
-            switch (cellContents)
-            {
-            case Grid::Empty:
-                location.y--;
-                break;
-            case Grid::Wall:
-                bruises++;
-                break;
-            case Grid::RubberWall:
-                bounce(newLocation);
-                break;
-            default:
-                ;
-            }
-        }
+        newLocation.y--;
         break;
     case Down:
-        if (newLocation.y < 39)
-        {
-            newLocation.y++;
-            cellContents = grid.getCellContents(newLocation.x, newLocation.y);
-            switch (cellContents)
-            {
-            case Grid::Empty:
-                location.y++;
-                break;
-            case Grid::Wall:
-                bruises++;
-                break;
-            case Grid::RubberWall:
-                bounce(newLocation);
-                break;
-            default:
-                ;
-            }
-        }
+        newLocation.y++;
         break;
     case Left:
-        if (newLocation.x > 0)
-        {
-            newLocation.x--;
-            cellContents = grid.getCellContents(newLocation.x, newLocation.y);
-            switch (cellContents)
-            {
-            case Grid::Empty:
-                location.x--;
-                break;
-            case Grid::Wall:
-                bruises++;
-                break;
-            case Grid::RubberWall:
-                bounce(newLocation);
-                break;
-            default:
-                ;
-            }
-        }
+        newLocation.x--;
         break;
     case Right:
-        if (newLocation.x == 39 && newLocation.y == 39)
-        {
-            // It's a win
-            newLocation.x++;
-            score++;
-            location.x++;
-            path.push_back(100 * newLocation.x + newLocation.y);
-            return Grid::Win;
-        }
-        if (newLocation.x < 39)
-        {
-            newLocation.x++;
-            cellContents = grid.getCellContents(newLocation.x, newLocation.y);
-            switch (cellContents)
-            {
-            case Grid::Empty:
-                location.x++;
-                break;
-            case Grid::Wall:
-                bruises++;
-                break;
-            case Grid::RubberWall:
-                bounce(newLocation);
-                break;
-            default:
-                ;
-            }
-        }
-        break;
+        newLocation.x++;
     default:
         ;
     }
+
+    return processMove(newLocation);
+}
+
+Grid::Contents Player::processMove(const sf::Vector2i& newLocation)
+{
+    Grid::Contents cellContents = grid.getCellContents(newLocation.x, newLocation.y);
+
+    switch (cellContents)
+    {
+    case Grid::Empty:
+        location.x = newLocation.x;
+        location.y = newLocation.y;
+        break;
+    case Grid::Wall:
+        bruises++;
+        break;
+    case Grid::RubberWall:
+        bounce(newLocation);
+        break;
+    case Grid::Win:
+        location.x = newLocation.x;
+    default:
+        ;
+    }
+    updateScore();
+    path.push_back(100 * newLocation.x + newLocation.y);
+    return cellContents;
+}
+
+void Player::updateScore()
+{
     if (location.x > maxCol)
     {
         maxCol = location.x;
@@ -144,8 +93,6 @@ Grid::Contents Player::move(Direction direction)
         it = find(path.begin(), path.end(), temp);
         if (it == path.end()) score++;
     }
-    path.push_back(100 * newLocation.x + newLocation.y);
-    return cellContents;
 }
 
 void Player::bounce(const sf::Vector2i& currentLoc)
@@ -216,7 +163,6 @@ void Player::explodeBomb()
         for (int y = location.y - 1; y <= location.y + 1; y++)
         {
             if (y < 0 || y >= 40 || (x == location.x && y == location.y)) continue;
-            //cout << "*** " << x << ',' << y << endl;
             grid.clearCell(x,y);
             path.push_back(100 * x + y);
         }

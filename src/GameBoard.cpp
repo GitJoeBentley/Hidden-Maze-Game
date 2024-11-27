@@ -59,11 +59,6 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
 
 }
 
-GameBoard::~GameBoard()
-{
-    //dtor
-}
-
 void GameBoard::draw_and_display(Player& player, int countdown, GameStatus status)
 {
     window.clear();
@@ -136,7 +131,7 @@ void GameBoard::flash(Player& player)
     while (window.isOpen())
     {
         elapsedTime = clock.getElapsedTime().asMilliseconds();
-        if (elapsedTime > 800.0f) break;
+        if (elapsedTime > 1000.0f) break;
         draw_and_display(player, 0, Active);
     }
     toggleDisplayMaze();
