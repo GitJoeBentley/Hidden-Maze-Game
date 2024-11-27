@@ -16,7 +16,7 @@ class GameBoard
 public:
     //GameBoard(std::string name, int level, sf::Texture& arrowTexture);
     GameBoard(sf::RenderWindow& wind, Sounds& sounds, std::string& name);
-    virtual ~GameBoard();
+    //virtual ~GameBoard();
     void draw_and_display(Player& player, int countdown, GameStatus status);
     sf::RenderWindow& getWindow()
     {
@@ -26,14 +26,17 @@ public:
     {
         return border;
     }
+
     void toggleDisplayMaze()
     {
         displayMaze = !displayMaze;
     }
+
     Grid& getGrid()
     {
         return grid;
     }
+
     void flash(Player& player);
 
     static sf::Font titleFont;

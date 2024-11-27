@@ -13,7 +13,7 @@ class Player : public sf::RectangleShape
         Grid::Contents move(Direction);
         unsigned getBruises() const { return bruises; }
         unsigned getScore() const { return score; }
-        sf::Vector2i getLocation() { return location; }
+        sf::Vector2i getLocation() const { return location; }
         void bounce(const sf::Vector2i& location);
         const std::vector<int>& getPath() const { return path; }
         void print_path() const;
@@ -38,6 +38,10 @@ class Player : public sf::RectangleShape
         int maxRow;
         int maxCol;
         std::vector<int> path;
+
+        Grid::Contents processMove(const sf::Vector2i& newLocation);
+        void updateScore();
+
 };
 
 #endif // PLAYER_H

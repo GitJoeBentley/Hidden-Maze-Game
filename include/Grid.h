@@ -19,7 +19,7 @@ class Grid
         sf::RectangleShape* getCell(int row, int col) const { return cell[row][col]; }
         Grid::Contents getCellContents(int row, int col) const;
         std::vector<int>& getPath() { return path; }
-        bool locationIsInThePath(int x, int y);
+        bool locationIsInThePath(int x, int y) const;
         void AddARandomWall(const std::string& = "solid");
         void clearCell(int x, int y);
 
