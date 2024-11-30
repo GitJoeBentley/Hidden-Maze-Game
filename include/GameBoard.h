@@ -38,10 +38,15 @@ public:
     }
 
     void flash(Player& player);
+    Grid::Contents jump(Player& player);
+    Grid::Contents jump(Player& player, Direction direction);
 
     static sf::Font titleFont;
     static sf::Font statusFont;
     static sf::Font defaultFont;
+
+    void clearMessage() { message.setString(std::string("")); }
+    void setMessage(const std::string& msg) { message.setString(msg); }
 
 private:
     sf::RenderWindow& window;
@@ -59,6 +64,8 @@ private:
     sf::Text statusText;
     sf::Text defaultText;
     bool displayMaze;
+    sf::RectangleShape popUp;
+    sf::Text message;
 };
 
 #endif // GAMEBOARD_H

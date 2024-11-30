@@ -25,6 +25,7 @@ class Player : public sf::RectangleShape
         void decrementScore() { score--; }
         void explodeBomb();
         void light();
+        Grid::Contents processMove(const sf::Vector2i& newLocation);
 
     protected:
 
@@ -39,7 +40,6 @@ class Player : public sf::RectangleShape
         int maxCol;
         std::vector<int> path;
 
-        Grid::Contents processMove(const sf::Vector2i& newLocation);
         void updateScore();
 
 };
