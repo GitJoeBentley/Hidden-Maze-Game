@@ -29,6 +29,7 @@ int main()
     window.setFramerateLimit(60);
     static bool bombUsed = false;
     static bool lightUsed = false;
+    static bool jumpUsed = false;
 
     Sounds sounds;
     HighScores highScores;
@@ -87,6 +88,7 @@ int main()
                     sounds.getExplosionSound().play();
                     player.explodeBomb();
                     bombUsed = true;
+                    countdown -= 3;
                     break;
                 }
                 else
@@ -100,6 +102,11 @@ int main()
                 sounds.getLightSound().play();
                 player.light();
                 lightUsed = true;
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) && jumpUsed == false)
+            {
+                cellContents = game.jump(player);
+                jumpUsed = true;
             }
 
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = player.move(Up);

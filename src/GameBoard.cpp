@@ -19,7 +19,8 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
       grid(),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
       door1(CellSize),door2(CellSize),
-      displayMaze(false)
+      displayMaze(false),
+      popUp(sf::Vector2f(GameWindowSize/3.0, GameWindowSize/6.0))
 {
     border.setFillColor(sf::Color(sf::Color::Blue));
     border.setOutlineThickness(CellWidth);
@@ -44,6 +45,7 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
     titleText.setFont(titleFont);
     statusText.setFont(statusFont);
     defaultText.setFont(defaultFont);
+    message.setFont(defaultFont);
 
     titleText.setCharacterSize(36);
     titleText.setPosition(WindowHorizontalOffset, CellWidth);
@@ -53,10 +55,20 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
     statusText.setCharacterSize(24);
     statusText.setPosition(800.0f, 25.0f);
     statusText.setFillColor(sf::Color::Yellow);
-    statusText.setString(string(" \n\nBruises 0") + "\nScore 0");
+    statusText.setString(string(" \n\nBruises 0") + "\nScore  0");
 
     defaultText.setStyle(sf::Text::Bold);
 
+
+    popUp.setOutlineColor(sf::Color::Yellow);
+    popUp.setOutlineThickness(10.0f);
+    popUp.setPosition(WindowHorizontalOffset + 275.f, WindowVerticalOffset + 320.f);
+    popUp.setFillColor(sf::Color(sf::Color::Black));
+
+    message.setCharacterSize(16);
+    message.setPosition(WindowHorizontalOffset + 300.f, WindowVerticalOffset + 350.f);
+    message.setFillColor(sf::Color::White);
+    message.setString(string(""));
 }
 
 void GameBoard::draw_and_display(Player& player, int countdown, GameStatus status)
@@ -121,6 +133,60 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
     }
     player.draw(window);
     window.display();
+}
+
+Grid::Contents GameBoard::jump(Player& player)
+{
+    sf::Event event;
+    setMessage("Press an arrow key to indicate\n     the direction of the jump\n\n or Escape to cancel the jump");
+
+    while (window.isOpen())
+    {
+        // Check all the window's events that were triggered
+        // since the last iteration of the main loop.
+        while (window.pollEvent(event))
+        {
+            if      (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) return Grid::OutOfBounds;
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) return jump(player, Up);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) return  jump(player, Down);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) return jump(player, Left);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) return jump(player, Right);
+            else break;
+        }
+
+        window.draw(popUp);
+        window.draw(message);
+        window.display();
+    }
+    return Grid::OutOfBounds;
+}
+
+Grid::Contents GameBoard::jump(Player& player, Direction direction)
+{
+    sf::Vector2i location = player.getLocation();
+    if ((location.y < 2 && direction == Up) ||
+            (location.x < 2 && direction == Left) ||
+            (location.y > 38 && direction == Down) ||
+            (location.x > 38 && direction == Right))
+        return Grid::OutOfBounds;
+    sf::Vector2i newLocation(location);
+    switch (direction)
+    {
+    case Up:
+        newLocation.y-=2;
+        break;
+    case Down:
+        newLocation.y+=2;
+        break;
+    case Left:
+        newLocation.x-=2;
+        break;
+    case Right:
+        newLocation.x+=2;
+    default:
+        ;
+    }
+    return player.processMove(newLocation);
 }
 
 void GameBoard::flash(Player& player)
