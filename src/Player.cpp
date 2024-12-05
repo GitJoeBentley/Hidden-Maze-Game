@@ -7,6 +7,7 @@
 using namespace std;
 
 Player::Player(Grid& grd)
+  //  : location(sf::Vector2i(38,38)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(-1)
     : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(-1)
 {
     playerTexture.loadFromFile(PlayerImageFile);

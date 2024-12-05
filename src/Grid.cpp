@@ -39,7 +39,7 @@ Grid::Grid() : numWalls(0), step(nullptr)
         AddARandomWall();
         counter++;
     }
-    while (counter < 100);
+    while (counter < 250);
 
     // Add rubber walls
     counter = 0;
@@ -48,7 +48,7 @@ Grid::Grid() : numWalls(0), step(nullptr)
         AddARandomWall("rubber");
         counter++;
     }
-    while (counter < 10);
+    while (counter < 25);
 
     generate_path();
 }

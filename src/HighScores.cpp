@@ -13,7 +13,7 @@ Score::Score(const char* n, int sc, int br, int tim, time_t t)
     : score(sc), bruises(br), ptime(tim), date(t?t:time(nullptr))
 {
 #ifdef _MSC_VER                         // for MSVS 2017
-	strcpy_s(name, sizeof name, n);
+    strcpy_s(name, sizeof name, n);
 #else
     std::strcpy(name,n);
 #endif
@@ -25,31 +25,31 @@ bool Score::operator<(const Score& obj) const
     return value() > obj.value();  // display in reverse order
 }
 
-    int Score::value() const
-    {
-        return 10000 * score + 100 * (50 - bruises) + (60 - ptime);
-    }
+int Score::value() const
+{
+    return 10000 * score + 100 * (50 - bruises) + (60 - ptime);
+}
 
 
 std::string Score::getDateAsString() const
 {
 #ifdef _MSC_VER                         // for MSVS 2017
-	tm tm_buffer;
-	localtime_s(&tm_buffer, &date);
-	std::string datestring = std::to_string(tm_buffer.tm_mon + 1);
-	datestring += '/';
-	datestring += std::to_string(tm_buffer.tm_mday);
-	datestring += '/';
-	datestring += std::to_string((tm_buffer.tm_year + 1900) % 100);
+    tm tm_buffer;
+    localtime_s(&tm_buffer, &date);
+    std::string datestring = std::to_string(tm_buffer.tm_mon + 1);
+    datestring += '/';
+    datestring += std::to_string(tm_buffer.tm_mday);
+    datestring += '/';
+    datestring += std::to_string((tm_buffer.tm_year + 1900) % 100);
 #else
-	tm* ptr2tm = localtime(&date);
-	std::string datestring = std::to_string(ptr2tm->tm_mon + 1);
-	datestring += '/';
-	datestring += std::to_string(ptr2tm->tm_mday);
-	datestring += '/';
-	datestring += std::to_string((ptr2tm->tm_year + 1900) % 100);
+    tm* ptr2tm = localtime(&date);
+    std::string datestring = std::to_string(ptr2tm->tm_mon + 1);
+    datestring += '/';
+    datestring += std::to_string(ptr2tm->tm_mday);
+    datestring += '/';
+    datestring += std::to_string((ptr2tm->tm_year + 1900) % 100);
 #endif
-	return datestring;
+    return datestring;
 }
 
 std::ostream& operator<<(std::ostream& out, const Score& obj)
@@ -67,7 +67,7 @@ std::ostream& operator<<(std::ostream& out, const Score& obj)
 std::string HighScores::HighScoresFilename = "highscores.bin";
 
 HighScores::HighScores()
-: highScores(), highScoresFileExists(true)
+    : highScores(), highScoresFileExists(true)
 {
     std::ifstream fin(HighScoresFilename,std::ios_base::binary);
     if (!fin)

@@ -15,6 +15,7 @@
 #include "HighScores.h"
 #include "Sounds.h"
 #include "Types.h"
+#include "Message.h"
 using namespace std;
 
 std::string welcome(sf::RenderWindow& window, const HighScores& highScores);
@@ -78,7 +79,7 @@ int main()
                 // bounce player
                 player.bounce(player.getLocation());
                 sounds.getRubberSound().play();
-
+                countdown -= 3;
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) game.getWindow().close();
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))   // bomb
@@ -101,11 +102,13 @@ int main()
             {
                 sounds.getLightSound().play();
                 player.light();
+                countdown -= 3;
                 lightUsed = true;
             }
             else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) && jumpUsed == false)
             {
                 cellContents = game.jump(player);
+                countdown -= 3;
                 jumpUsed = true;
             }
 
@@ -194,7 +197,7 @@ std::string welcome(sf::RenderWindow& window, const HighScores& highScores)
     highScoresText.setFont(instructionsFont);
     highScoresText.setCharacterSize(16); // in pixels, not points!
     highScoresText.setFillColor(sf::Color::Green);
-    highScoresText.setPosition(150.0f,550.0f);
+    highScoresText.setPosition(150.0f,600.0f);
 
     // Write High Scores
     std::ostringstream sout;
