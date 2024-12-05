@@ -44,9 +44,12 @@ public:
     static sf::Font titleFont;
     static sf::Font statusFont;
     static sf::Font defaultFont;
+    static sf::Font winFont;
 
-    void clearMessage() { message.setString(std::string("")); }
-    void setMessage(const std::string& msg) { message.setString(msg); }
+    //void clearMessage() { message.setString(std::string("")); }
+    //void setMessage(const std::string& msg) { message.setString(msg); }
+    void winlose(GameStatus status);
+    void start();
 
 private:
     sf::RenderWindow& window;
@@ -58,14 +61,16 @@ private:
     sf::RectangleShape door1;
     sf::RectangleShape door2;
     sf::Texture arrowTexture;
+    sf::Texture borderTexture;
     sf::Sprite arrow1;
     sf::Sprite arrow2;
     sf::Text titleText;
     sf::Text statusText;
     sf::Text defaultText;
+    sf::Text winText;
     bool displayMaze;
     sf::RectangleShape popUp;
-    sf::Text message;
+    //sf::Text message;
 };
 
 #endif // GAMEBOARD_H

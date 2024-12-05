@@ -14,6 +14,7 @@ const float WindowHorizontalOffset = 100.0f;
 const float WindowVerticalOffset = 150.0f;
 
 const std::string ResourcePath = "resources/";
+const std::string BorderImageFile = ResourcePath + "bricks.jpg";
 const std::string PlayerImageFile = ResourcePath + "player.jpg";
 const std::string ArrowImageFile = ResourcePath + "arrow.jpg";
 const std::string MusicStartFile = ResourcePath + "BlueSuedeShoes.ogg";
@@ -29,6 +30,7 @@ const std::string LightSoundFile = ResourcePath + "light.wav";
 const std::string TitleFontFile = ResourcePath + "ITCKRIST.TTF";
 const std::string StatusFontFile = ResourcePath + "courbd.ttf";
 const std::string DefaultFontFile = ResourcePath + "arial.ttf";
+const std::string WinFontFile = ResourcePath + "SHOWG.TTF";
 const std::string WelcomeFile = ResourcePath + "welcome.txt";
 
 #endif
