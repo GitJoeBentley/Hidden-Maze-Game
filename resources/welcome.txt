@@ -8,14 +8,17 @@ through them.  A rubber wall will bounce you back to a random location.
 You will lose the game if you take more than 60 seconds to traverse the maze or if you receive
 50 bruises.  Points are awarded as you progress through the maze.
 
-The maze is flashed for 1 second at the beginning of the game.  You can also request a 1 second
+The maze is flashed for 3/4 of a second at the beginning of the game.  You can also request another
 flash using the F key.
 
-Key Assignments
+Key Assignments (Each feature will cost you 3 seconds of play)
 B = A Bomb is used to clear the 8 adjacent cells.  You can use this only one time.
-L = Light up the 8 adjacent cells.  You can use this only one time.
-Q = Quit the game.
 F = Flash the maze for 1 second.  It will cost you 1 point and 1 bruise.  One new solid wall and
     one rubber wall will be added to the maze. You will be bounced to a new location.
+J = Jump over a cell in any direction
+L = Light up the 8 adjacent cells.  You can use this only one time.
+
+Q = Quit the game.
+
 
 Good luck.
