@@ -9,7 +9,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Grid.h"
-#include "GameBoard.h"
+#include "Game.h"
 #include "HighScores.h"
 #include "Sounds.h"
 #include "Types.h"
@@ -32,7 +32,7 @@ int main()
     Grid::Contents cellContents;
     std::string name = welcome(window, highScores);
 
-    GameBoard* game;
+    Game* game;
 
     // Music
     sf::Music music;
@@ -58,7 +58,7 @@ int main()
         jumpUsed = false;
         countdown = 60;
         status = NotStarted;
-        game = new GameBoard(window, sounds, name);
+        game = new Game(window, sounds, name);
         game -> flash(status);
         music.play();
 
