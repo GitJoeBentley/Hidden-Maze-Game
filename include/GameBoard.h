@@ -9,15 +9,19 @@
 #include "Sounds.h"
 #include "HighScores.h"
 #include "Constants.h"
+#include "Message.h"
 #include "Types.h"
 
 class GameBoard
 {
 public:
-    //GameBoard(std::string name, int level, sf::Texture& arrowTexture);
+    static sf::Font titleFont;
+    static sf::Font statusFont;
+    static sf::Font defaultFont;
+    static sf::Font winFont;
+
     GameBoard(sf::RenderWindow& wind, Sounds& sounds, std::string& name);
-    //virtual ~GameBoard();
-    void draw_and_display(Player& player, int countdown, GameStatus status);
+    void draw_and_display(Player& player, int countdown, GameStatus& status);
     sf::RenderWindow& getWindow()
     {
         return window;
@@ -37,19 +41,12 @@ public:
         return grid;
     }
 
-    void flash(Player& player);
+    void flash(Player& player, GameStatus& status);
     Grid::Contents jump(Player& player);
     Grid::Contents jump(Player& player, Direction direction);
-
-    static sf::Font titleFont;
-    static sf::Font statusFont;
-    static sf::Font defaultFont;
-    static sf::Font winFont;
-
-    //void clearMessage() { message.setString(std::string("")); }
-    //void setMessage(const std::string& msg) { message.setString(msg); }
-    void winlose(GameStatus status);
+    void winlose(GameStatus& status);
     void start();
+    bool playAgain(Player& player, int countdown);
 
 private:
     sf::RenderWindow& window;
@@ -69,8 +66,8 @@ private:
     sf::Text defaultText;
     sf::Text winText;
     bool displayMaze;
-    sf::RectangleShape popUp;
-    //sf::Text message;
+    //sf::RectangleShape popUp;
+    Message* message = nullptr;
 };
 
 #endif // GAMEBOARD_H
