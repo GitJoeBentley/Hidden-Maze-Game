@@ -20,8 +20,17 @@ public:
     static sf::Font defaultFont;
     static sf::Font winFont;
 
-    GameBoard(sf::RenderWindow& wind, Sounds& sounds, std::string& name);
-    void draw_and_display(Player& player, int countdown, GameStatus& status);
+    GameBoard(sf::RenderWindow& wind, Sounds& sounds, const std::string& name);
+    ~GameBoard()
+    {
+        delete grid;
+        grid = nullptr;
+        delete player;
+        player = nullptr;
+        delete message;
+        message = nullptr;
+    }
+    void draw_and_display(int countdown, GameStatus& status);
     sf::RenderWindow& getWindow()
     {
         return window;
@@ -36,23 +45,40 @@ public:
         displayMaze = !displayMaze;
     }
 
-    Grid& getGrid()
+    Grid* getGrid()
     {
         return grid;
     }
+    Player* getPlayer()
+    {
+        return player;
+    }
+    void incrementBruises()
+    {
+        player->incrementBruises();
+    }
+    void decrementScore()
+    {
+        player->decrementScore();
+    }
 
-    void flash(Player& player, GameStatus& status);
-    Grid::Contents jump(Player& player);
-    Grid::Contents jump(Player& player, Direction direction);
+    void flash(GameStatus& status);
+    Grid::Contents jump();
+    Grid::Contents jump(Direction direction);
     void winlose(GameStatus& status);
     void start();
-    bool playAgain(Player& player, int countdown);
+    bool playAgain(int countdown);
+    void refresh(const std::string& name_);
+    void bounce() { player->bounce(); }
+    int getScore() const { return player->getScore(); }
+    int getBruises() const { return player->getBruises(); }
+    Grid::Contents move(Direction direction) { return player-> move(direction); }
+    void bomb() { player -> bomb(); }
+    void light() { player -> light(); }
 
 private:
     sf::RenderWindow& window;
     Sounds& sounds;
-    std::string& name;
-    Grid grid;
     //Player player(const sf::Texture& playerTexture, sf::Vector2i loc(-1,0));
     sf::RectangleShape border;
     sf::RectangleShape door1;
@@ -66,8 +92,9 @@ private:
     sf::Text defaultText;
     sf::Text winText;
     bool displayMaze;
-    //sf::RectangleShape popUp;
+    Grid* grid = nullptr;
     Message* message = nullptr;
+    Player* player = nullptr;
 };
 
 #endif // GAMEBOARD_H

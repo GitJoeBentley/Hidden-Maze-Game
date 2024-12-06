@@ -4,17 +4,18 @@
 #include "Types.h"
 #include "Grid.h"
 #include <vector>
+#include <string>
 
 class Player : public sf::RectangleShape
 {
     public:
-        Player(Grid& grid);
+        Player(const std::string& name, Grid& grid);
         void draw(sf::RenderWindow& window);
         Grid::Contents move(Direction);
-        unsigned getBruises() const { return bruises; }
-        unsigned getScore() const { return score; }
+        int getBruises() const { return bruises; }
+        int getScore() const { return score; }
         sf::Vector2i getLocation() const { return location; }
-        void bounce(const sf::Vector2i& location);
+        void bounce();
         const std::vector<int>& getPath() const { return path; }
         void print_path() const;
         void draw_path(sf::RenderWindow& window) const;
@@ -23,13 +24,14 @@ class Player : public sf::RectangleShape
         sf::Sprite& getPlayer() { return player; }
         void incrementBruises() { bruises++; }
         void decrementScore() { score--; }
-        void explodeBomb();
+        void bomb();
         void light();
         Grid::Contents processMove(const sf::Vector2i& newLocation);
 
     protected:
 
     private:
+        std::string name;
         sf::Vector2i location;
         Grid& grid;
         sf::Texture playerTexture;
