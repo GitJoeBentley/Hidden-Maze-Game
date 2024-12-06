@@ -28,142 +28,158 @@ int main()
     srand(static_cast<unsigned>(time(0)));
     sf::RenderWindow window(sf::VideoMode(GameSize.x, GameSize.y),"Hidden Maze Game",sf::Style::Close);
     window.setFramerateLimit(60);
-    static bool bombUsed = false;
-    static bool lightUsed = false;
-    static bool jumpUsed = false;
 
     Sounds sounds;
     HighScores highScores;
-    std::string name = welcome(window, highScores);
-    GameBoard game(window, sounds, name);
-
-    Player player(game.getGrid());
-
     Grid::Contents cellContents;
-    game.flash(player);
+    std::string name = welcome(window, highScores);
+
+    GameBoard* game;
+    Player* player;
 
     // Music
     sf::Music music;
     music.openFromFile(MusicStartFile);
     music.setVolume(20);
-    music.play();
 
     //GAME CLOCK & TIMER
     sf::Clock clock;
-    int countdown = 60;
+    int countdown;
     int timer;
-    GameStatus status = NotStarted;
+    GameStatus status;
     sf::Event event;
-    // Run the program as long as the window is open
-    while (game.getWindow().isOpen())
+    bool playAgain = true;
+    static bool bombUsed = false;
+    static bool lightUsed = false;
+    static bool jumpUsed = false;
+
+    // Game Loop starts here ///////////////////////////
+    while (playAgain)
     {
-        // Check all the window's events that were triggered
-        // since the last iteration of the main loop.
-        while (game.getWindow().pollEvent(event))
+        bombUsed = false;
+        lightUsed = false;
+        jumpUsed = false;
+        countdown = 60;
+        status = NotStarted;
+        game = new GameBoard(window, sounds, name);
+        player = new Player(game->getGrid());
+        game -> flash(*player, status);
+        music.play();
+
+        while (game->getWindow().isOpen())
         {
-            if (event.type == sf::Event::Closed)
+            // Check all the window's events that were triggered
+            // since the last iteration of the main loop.
+            while (game->getWindow().pollEvent(event))
             {
-                game.getWindow().close();
-            }
-            else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) game.getWindow().close();
-            else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game.toggleDisplayMaze();
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
-            {
-                game.flash(player);
-                player.decrementScore();
-                player.incrementBruises();
-                // add a rubber wall
-                game.getGrid().AddARandomWall("rubber");
-                // add a solid wall
-                game.getGrid().AddARandomWall();
-                // bounce player
-                player.bounce(player.getLocation());
-                sounds.getRubberSound().play();
-                countdown -= 3;
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) game.getWindow().close();
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))   // bomb
-            {
-                if (!bombUsed)
+                if (event.type == sf::Event::Closed)
                 {
-                    sounds.getExplosionSound().play();
-                    player.explodeBomb();
-                    bombUsed = true;
+                    game->getWindow().close();
+                }
+                else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) game->getWindow().close();
+                else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game->toggleDisplayMaze();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+                {
+                    game->flash(*player, status);
+                    player->decrementScore();
+                    player->incrementBruises();
+                    // add a rubber wall
+                    game->getGrid().AddARandomWall("rubber");
+                    // add a solid wall
+                    game->getGrid().AddARandomWall();
+                    // bounce player
+                    player->bounce(player->getLocation());
+                    sounds.getRubberSound().play();
                     countdown -= 3;
-                    break;
                 }
-                else
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) game->getWindow().close();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))   // bomb
                 {
-                    sounds.getFartSound().play();
+                    if (!bombUsed)
+                    {
+                        sounds.getExplosionSound().play();
+                        player->explodeBomb();
+                        bombUsed = true;
+                        countdown -= 3;
+                        break;
+                    }
+                    else
+                    {
+                        sounds.getFartSound().play();
+                        break;
+                    }
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) && lightUsed == false)   // bomb
+                {
+                    sounds.getLightSound().play();
+                    player->light();
+                    countdown -= 3;
+                    lightUsed = true;
+                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) && jumpUsed == false)
+                {
+                    cellContents = game->jump(*player);
+                    countdown -= 3;
+                    jumpUsed = true;
+                }
+
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = player->move(Up);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = player->move(Down);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = player->move(Left);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                {
+                    if (status == NotStarted) status = Active;
+                    cellContents = player->move(Right);
+                }
+                else break;
+
+
+                if (cellContents == Grid::Empty) sounds.getStepSound().play();
+                if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
+                if (cellContents == Grid::RubberWall) sounds.getRubberSound().play();
+                if (cellContents == Grid::OutOfBounds) sounds.getFartSound().play();
+                if (cellContents == Grid::Win)
+                {
+                    sounds.getWinSound().play();
+                    status = Win;
                     break;
                 }
             }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) && lightUsed == false)   // bomb
+            if (status != NotStarted)
             {
-                sounds.getLightSound().play();
-                player.light();
-                countdown -= 3;
-                lightUsed = true;
-            }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) && jumpUsed == false)
-            {
-                cellContents = game.jump(player);
-                countdown -= 3;
-                jumpUsed = true;
+                timer = clock.getElapsedTime().asSeconds();
+                if (timer > 0)
+                {
+                    countdown--;
+                    clock.restart();
+                    if (music.getStatus() == sf::SoundSource::Playing) music.stop();
+                }
             }
 
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = player.move(Up);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = player.move(Down);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = player.move(Left);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            // loss
+            if (countdown <= 0 or player->getBruises() >= 50)
             {
-                if (status == NotStarted) status = Active;
-                cellContents = player.move(Right);
-            }
-            else break;
-
-
-            if (cellContents == Grid::Empty) sounds.getStepSound().play();
-            if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
-            if (cellContents == Grid::RubberWall) sounds.getRubberSound().play();
-            if (cellContents == Grid::OutOfBounds) sounds.getFartSound().play();
-            if (cellContents == Grid::Win)
-            {
-                sounds.getWinSound().play();
-                status = Win;
+                status = Loss;
+                game->draw_and_display(*player, countdown, status);
                 break;
             }
-        }
-        if (status != NotStarted)
-        {
-            timer = clock.getElapsedTime().asSeconds();
-            if (timer > 0)
+
+            game->draw_and_display(*player, countdown, status);
+
+            if (status == Win)
             {
-                countdown--;
-                clock.restart();
-                if (music.getStatus() == sf::SoundSource::Playing) music.stop();
+                highScores.updateHighScores(Score(name.c_str(),player->getScore(), player->getBruises(), 60 - countdown, time(0)));
+                highScores.WriteHighScoresFile();
+
+                break;
             }
+            if (status == GameOver) break;
+
         }
-
-        // loss
-        if (countdown <= 0 or player.getBruises() >= 50)
-        {
-            status = Loss;
-            game.draw_and_display(player, countdown, Loss);
-            break;
-        }
-
-        game.draw_and_display(player, countdown, status);
-
-        if (status == Win)
-        {
-            highScores.updateHighScores(Score(name.c_str(),player.getScore(), player.getBruises(), 60 - countdown, time(0)));
-            highScores.WriteHighScoresFile();
-            break;
-        }
-
+        playAgain = game->playAgain(*player, countdown);
+        delete player;
+        delete game;
     }
-
     return 0;
 }
 

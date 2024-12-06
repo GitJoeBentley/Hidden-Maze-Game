@@ -21,8 +21,7 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
       grid(),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
       door1(CellSize),door2(CellSize),
-      displayMaze(false),
-      popUp(sf::Vector2f(GameWindowSize/3.0, GameWindowSize/6.0))
+      displayMaze(false)
 {
     border.setOutlineThickness(CellWidth);
     borderTexture.loadFromFile(BorderImageFile);
@@ -61,17 +60,11 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
     statusText.setString(string(" \n\nBruises 0") + "\nScore  0");
 
     defaultText.setStyle(sf::Text::Bold);
-
-    popUp.setOutlineColor(sf::Color::Yellow);
-    popUp.setOutlineThickness(10.0f);
-    popUp.setPosition(WindowHorizontalOffset + 275.f, WindowVerticalOffset + 320.f);
-    popUp.setFillColor(sf::Color(sf::Color::Black));
 }
 
-void GameBoard::draw_and_display(Player& player, int countdown, GameStatus status)
+void GameBoard::draw_and_display(Player& player, int countdown, GameStatus& status)
 {
     window.clear();
-
     window.draw(border);
     window.draw(door2);
     window.draw(arrow2);
@@ -96,14 +89,60 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus statu
         winlose(status);
         break;
     case NotStarted:
-
         start();
         break;
+
     default:
         ;
     }
     player.draw(window);
     window.display();
+}
+
+bool GameBoard::playAgain(Player& player, int countdown)
+{
+    unsigned fontsize = 32;
+    defaultText.setCharacterSize(fontsize);
+    std::string text = "Play Again? (Y/N)";
+    if (message)
+    {
+        delete message;
+        message = nullptr;
+    }
+    message = new Message(text,
+                          sf::Vector2f(0.67f * text.length()*fontsize, 2.1f * fontsize),
+                          sf::Vector2f(0.30f * GameSize.x, 0.4f * GameSize.y),
+                          sf::Vector2f(0.36f * GameSize.x, 0.41f * GameSize.y),
+                          defaultFont,
+                          fontsize);
+    sf::Event event;
+
+    while (window.isOpen())
+    {
+        // Check all the window's events that were triggered
+        // since the last iteration of the main loop.
+        while (window.pollEvent(event))
+        {
+            if      (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) return false;
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) return true;
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::N)) return false;
+            else break;
+        }
+        window.draw(border);
+        window.draw(door2);
+        window.draw(arrow2);
+        statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(player.getBruises()) + "\nScore " + std::to_string(player.getScore()));
+        window.draw(statusText);
+        window.draw(titleText);
+        player.draw(window);
+        player.draw_path(window);
+        message->draw(window);
+        window.display();
+    }
+
+    delete message;
+    message = nullptr;
+    return false;
 }
 
 void GameBoard::start()
@@ -112,46 +151,56 @@ void GameBoard::start()
     defaultText.setCharacterSize(fontsize);
     std::string text = "Press the Right Arrow key to start";
 
-    Message msg(text,
-                sf::Vector2f(0.67f * text.length()*fontsize, 2.1f * fontsize),
-                sf::Vector2f(0.23 * GameSize.x, 0.4f * GameSize.y),
-                sf::Vector2f(0.31f * GameSize.x, 0.41f * GameSize.y),
-                defaultFont,
-                fontsize);
-    msg.draw(window);
+    message = new Message(text,
+                          sf::Vector2f(0.67f * text.length()*fontsize, 2.1f * fontsize),
+                          sf::Vector2f(0.23 * GameSize.x, 0.4f * GameSize.y),
+                          sf::Vector2f(0.31f * GameSize.x, 0.41f * GameSize.y),
+                          defaultFont,
+                          fontsize);
+    message->draw(window);
     window.draw(door1);
     window.draw(arrow1);
 }
 
-void GameBoard::winlose(GameStatus status)
+void GameBoard::winlose(GameStatus& status)
 {
+    if (message)
+    {
+        delete message;
+        message = nullptr;
+    }
     if (status == Win)
     {
         auto fontsize = 64;
         string text = "Yeah!!!   You win";
-        Message msg(text,
-                    sf::Vector2f(0.60f * text.length()*fontsize, 1.5f * fontsize),
-                    sf::Vector2f(0.17f * GameSize.x, 0.5f * GameSize.y),
-                    sf::Vector2f(0.21f * GameSize.x, 0.512f * GameSize.y),
-                    winFont,
-                    fontsize);
-        msg.draw(window);
+
+        message = new Message(text,
+                              sf::Vector2f(0.60f * text.length()*fontsize, 1.5f * fontsize),
+                              sf::Vector2f(0.17f * GameSize.x, 0.5f * GameSize.y),
+                              sf::Vector2f(0.21f * GameSize.x, 0.512f * GameSize.y),
+                              winFont,
+                              fontsize);
+        message->draw(window);
     }
     else
     {
         auto fontsize = 64;
         string text = "Too bad, you lose";
         defaultText.setCharacterSize(fontsize);
-        Message msg(text,
-                    sf::Vector2f(0.60f * text.length()*fontsize, 1.5f * fontsize),
-                    sf::Vector2f(0.18f * GameSize.x, 0.5f * GameSize.y),
-                    sf::Vector2f(0.28f * GameSize.x, 0.512f * GameSize.y),
-                    defaultFont,
-                    fontsize);
-        msg.draw(window);
+        message = new Message(text,
+                              sf::Vector2f(0.60f * text.length()*fontsize, 1.5f * fontsize),
+                              sf::Vector2f(0.18f * GameSize.x, 0.5f * GameSize.y),
+                              sf::Vector2f(0.28f * GameSize.x, 0.51f * GameSize.y),
+                              defaultFont,
+                              fontsize);
+        message->draw(window);
     }
     window.display();
-    sf::sleep(sf::Time(sf::seconds(5.0f)));
+    sf::sleep(sf::Time(sf::seconds(4.0f)));
+
+    delete message;
+    message = nullptr;
+    status = GameOver;
 }
 
 Grid::Contents GameBoard::jump(Player& player)
@@ -159,12 +208,12 @@ Grid::Contents GameBoard::jump(Player& player)
     unsigned fontsize = 24;
     defaultText.setCharacterSize(fontsize);
     std::string text = "Press an arrow key to indicate\n     the direction of the jump\n or Escape to cancel the jump";
-    Message msg(text,
-                sf::Vector2f(500.0f, 180.0f),
-                sf::Vector2f(0.245 * GameSize.x, 0.35 * GameSize.y),
-                sf::Vector2f(0.33f * GameSize.x, 0.39f * GameSize.y),
-                defaultFont,
-                fontsize);
+    message = new Message(text,
+                          sf::Vector2f(500.0f, 180.0f),
+                          sf::Vector2f(0.245 * GameSize.x, 0.35 * GameSize.y),
+                          sf::Vector2f(0.33f * GameSize.x, 0.39f * GameSize.y),
+                          defaultFont,
+                          fontsize);
     sf::Event event;
 
     while (window.isOpen())
@@ -181,7 +230,7 @@ Grid::Contents GameBoard::jump(Player& player)
             else break;
         }
 
-        msg.draw(window);
+        message->draw(window);
         window.display();
     }
     return Grid::OutOfBounds;
@@ -212,19 +261,26 @@ Grid::Contents GameBoard::jump(Player& player, Direction direction)
     default:
         ;
     }
+    if (message)
+    {
+        delete message;
+        message = nullptr;
+    }
+
     return player.processMove(newLocation);
 }
 
-void GameBoard::flash(Player& player)
+void GameBoard::flash(Player& player, GameStatus& status)
 {
     Clock clock;
     int elapsedTime;
     toggleDisplayMaze();
+    //status = Active;
     while (window.isOpen())
     {
         elapsedTime = clock.getElapsedTime().asMilliseconds();
         if (elapsedTime > 750.0f) break;
-        draw_and_display(player, 0, Active);
+        draw_and_display(player, 0, status);
     }
     toggleDisplayMaze();
 }
