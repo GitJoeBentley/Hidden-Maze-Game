@@ -14,11 +14,9 @@ sf::Font GameBoard::statusFont;
 sf::Font GameBoard::defaultFont;
 sf::Font GameBoard::winFont;
 
-GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
+GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, const std::string& name_)
     : window(wind),
       sounds(sound),
-      name(name_),
-      grid(),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
       door1(CellSize),door2(CellSize),
       displayMaze(false)
@@ -52,7 +50,7 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
     titleText.setCharacterSize(36);
     titleText.setPosition(WindowHorizontalOffset, CellWidth);
     titleText.setFillColor(sf::Color::Yellow);
-    titleText.setString(name + string("'s Hidden Maze Game"));
+    titleText.setString(name_ + string("'s Hidden Maze Game"));
 
     statusText.setCharacterSize(24);
     statusText.setPosition(800.0f, 25.0f);
@@ -60,22 +58,31 @@ GameBoard::GameBoard(sf::RenderWindow& wind, Sounds& sound, std::string& name_)
     statusText.setString(string(" \n\nBruises 0") + "\nScore  0");
 
     defaultText.setStyle(sf::Text::Bold);
+    refresh(name_);
 }
 
-void GameBoard::draw_and_display(Player& player, int countdown, GameStatus& status)
+void GameBoard::refresh(const string& name_)
+{
+    if (grid) delete grid;
+    if (player) delete player;
+    grid = new Grid();
+    player = new Player(name_, *grid);
+}
+
+void GameBoard::draw_and_display(int countdown, GameStatus& status)
 {
     window.clear();
     window.draw(border);
     window.draw(door2);
     window.draw(arrow2);
-    statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(player.getBruises()) + "\nScore " + std::to_string(player.getScore()));
+    statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(player->getBruises()) + "\nScore " + std::to_string(player->getScore()));
     window.draw(statusText);
     window.draw(titleText);
-    if (player.getPath().size() > 1) player.draw_path(window);
+    if (player->getPath().size() > 1) player->draw_path(window);
     if (displayMaze)
     {
-        grid.draw_path(window);
-        grid.draw(window);
+        grid->draw_path(window);
+        grid->draw(window);
     }
     else border.setTexture(&borderTexture);;
 
@@ -95,11 +102,11 @@ void GameBoard::draw_and_display(Player& player, int countdown, GameStatus& stat
     default:
         ;
     }
-    player.draw(window);
+    player->draw(window);
     window.display();
 }
 
-bool GameBoard::playAgain(Player& player, int countdown)
+bool GameBoard::playAgain(int countdown)
 {
     unsigned fontsize = 32;
     defaultText.setCharacterSize(fontsize);
@@ -131,11 +138,11 @@ bool GameBoard::playAgain(Player& player, int countdown)
         window.draw(border);
         window.draw(door2);
         window.draw(arrow2);
-        statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(player.getBruises()) + "\nScore " + std::to_string(player.getScore()));
+        statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(getBruises()) + "\nScore " + std::to_string(getScore()));
         window.draw(statusText);
         window.draw(titleText);
-        player.draw(window);
-        player.draw_path(window);
+        player->draw(window);
+        player->draw_path(window);
         message->draw(window);
         window.display();
     }
@@ -203,7 +210,7 @@ void GameBoard::winlose(GameStatus& status)
     status = GameOver;
 }
 
-Grid::Contents GameBoard::jump(Player& player)
+Grid::Contents GameBoard::jump()
 {
     unsigned fontsize = 24;
     defaultText.setCharacterSize(fontsize);
@@ -223,10 +230,10 @@ Grid::Contents GameBoard::jump(Player& player)
         while (window.pollEvent(event))
         {
             if      (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) return Grid::OutOfBounds;
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) return jump(player, Up);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) return  jump(player, Down);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) return jump(player, Left);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) return jump(player, Right);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) return jump(Up);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) return  jump(Down);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) return jump(Left);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) return jump(Right);
             else break;
         }
 
@@ -236,9 +243,9 @@ Grid::Contents GameBoard::jump(Player& player)
     return Grid::OutOfBounds;
 }
 
-Grid::Contents GameBoard::jump(Player& player, Direction direction)
+Grid::Contents GameBoard::jump(Direction direction)
 {
-    sf::Vector2i location = player.getLocation();
+    sf::Vector2i location = player->getLocation();
     if ((location.y < 2 && direction == Up) ||
             (location.x < 2 && direction == Left) ||
             (location.y > 38 && direction == Down) ||
@@ -267,10 +274,10 @@ Grid::Contents GameBoard::jump(Player& player, Direction direction)
         message = nullptr;
     }
 
-    return player.processMove(newLocation);
+    return player->processMove(newLocation);
 }
 
-void GameBoard::flash(Player& player, GameStatus& status)
+void GameBoard::flash(GameStatus& status)
 {
     Clock clock;
     int elapsedTime;
@@ -280,7 +287,7 @@ void GameBoard::flash(Player& player, GameStatus& status)
     {
         elapsedTime = clock.getElapsedTime().asMilliseconds();
         if (elapsedTime > 750.0f) break;
-        draw_and_display(player, 0, status);
+        draw_and_display(0, status);
     }
     toggleDisplayMaze();
 }

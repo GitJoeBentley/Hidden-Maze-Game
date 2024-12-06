@@ -6,13 +6,14 @@
 #include <algorithm>
 using namespace std;
 
-Player::Player(Grid& grd)
-  //  : location(sf::Vector2i(38,38)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(-1)
-    : location(sf::Vector2i(-1,0)), grid(grd), bruises(0), score(0), maxRow(0), maxCol(-1)
+
+Player::Player(const string& name_, Grid& grid_)
+    : name(name_), location(sf::Vector2i(-1,0)), grid(grid_), bruises(0), score(0), maxRow(0), maxCol(-1)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
 }
+
 
 void Player::draw(sf::RenderWindow& window)
 {
@@ -63,7 +64,7 @@ Grid::Contents Player::processMove(const sf::Vector2i& newLocation)
         bruises++;
         break;
     case Grid::RubberWall:
-        bounce(newLocation);
+        bounce();
         break;
     case Grid::Win:
         location.x = newLocation.x;
@@ -96,20 +97,21 @@ void Player::updateScore()
     }
 }
 
-void Player::bounce(const sf::Vector2i& currentLoc)
+void Player::bounce()
 {
     sf::Vector2i newLoc;
     bool locationOccupied = true;
     while (locationOccupied)
     {
-        newLoc.x = rand() % (currentLoc.x + 1);
-        newLoc.y = rand() % (currentLoc.y + 1);
+        newLoc.x = rand() % (location.x + 1);
+        newLoc.y = rand() % (location.y + 1);
         if (!grid.getCell(newLoc.x, newLoc.y))
             locationOccupied = false;
     }
     location = newLoc;
     path.push_back(100 * newLoc.x + newLoc.y);
 }
+
 
 void Player::print_path() const
 {
@@ -156,7 +158,7 @@ void Player::draw_path(sf::RenderWindow& window) const
     }
 }
 
-void Player::explodeBomb()
+void Player::bomb()
 {
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {

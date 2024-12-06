@@ -9,8 +9,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "Grid.h"
-#include "Player.h"
-#include "Player.h"
 #include "GameBoard.h"
 #include "HighScores.h"
 #include "Sounds.h"
@@ -35,7 +33,6 @@ int main()
     std::string name = welcome(window, highScores);
 
     GameBoard* game;
-    Player* player;
 
     // Music
     sf::Music music;
@@ -44,14 +41,14 @@ int main()
 
     //GAME CLOCK & TIMER
     sf::Clock clock;
-    int countdown;
+    int countdown;    // move to Game class
     int timer;
-    GameStatus status;
+    GameStatus status;  // move to Game class
     sf::Event event;
     bool playAgain = true;
-    static bool bombUsed = false;
-    static bool lightUsed = false;
-    static bool jumpUsed = false;
+    static bool bombUsed = false;// move to Game class
+    static bool lightUsed = false;// move to Game class
+    static bool jumpUsed = false;// move to Game class
 
     // Game Loop starts here ///////////////////////////
     while (playAgain)
@@ -62,8 +59,7 @@ int main()
         countdown = 60;
         status = NotStarted;
         game = new GameBoard(window, sounds, name);
-        player = new Player(game->getGrid());
-        game -> flash(*player, status);
+        game -> flash(status);
         music.play();
 
         while (game->getWindow().isOpen())
@@ -80,15 +76,15 @@ int main()
                 else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game->toggleDisplayMaze();
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
                 {
-                    game->flash(*player, status);
-                    player->decrementScore();
-                    player->incrementBruises();
+                    game->flash(status);
+                    game->decrementScore();
+                    game->incrementBruises();
                     // add a rubber wall
-                    game->getGrid().AddARandomWall("rubber");
+                    game->getGrid()->AddARandomWall("rubber");
                     // add a solid wall
-                    game->getGrid().AddARandomWall();
+                    game->getGrid()->AddARandomWall();
                     // bounce player
-                    player->bounce(player->getLocation());
+                    game->bounce();  // simplify
                     sounds.getRubberSound().play();
                     countdown -= 3;
                 }
@@ -98,7 +94,7 @@ int main()
                     if (!bombUsed)
                     {
                         sounds.getExplosionSound().play();
-                        player->explodeBomb();
+                        game->bomb();
                         bombUsed = true;
                         countdown -= 3;
                         break;
@@ -109,34 +105,34 @@ int main()
                         break;
                     }
                 }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) && lightUsed == false)   // bomb
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) && lightUsed == false)   // light
                 {
                     sounds.getLightSound().play();
-                    player->light();
+                    game->light();
                     countdown -= 3;
                     lightUsed = true;
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) && jumpUsed == false)
                 {
-                    cellContents = game->jump(*player);
+                    cellContents = game->jump();
                     countdown -= 3;
                     jumpUsed = true;
                 }
 
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = player->move(Up);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = player->move(Down);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = player->move(Left);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = game->move(Up);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = game->move(Down);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = game->move(Left);
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
                 {
                     if (status == NotStarted) status = Active;
-                    cellContents = player->move(Right);
+                    cellContents = game->move(Right);
                 }
                 else break;
 
 
-                if (cellContents == Grid::Empty) sounds.getStepSound().play();
-                if (cellContents == Grid::Wall) sounds.getHitWallSound().play();
-                if (cellContents == Grid::RubberWall) sounds.getRubberSound().play();
+                if (cellContents == Grid::Empty)       sounds.getStepSound().play();
+                if (cellContents == Grid::Wall)        sounds.getHitWallSound().play();
+                if (cellContents == Grid::RubberWall)  sounds.getRubberSound().play();
                 if (cellContents == Grid::OutOfBounds) sounds.getFartSound().play();
                 if (cellContents == Grid::Win)
                 {
@@ -157,18 +153,18 @@ int main()
             }
 
             // loss
-            if (countdown <= 0 or player->getBruises() >= 50)
+            if (countdown <= 0 or game->getBruises() >= 50)
             {
                 status = Loss;
-                game->draw_and_display(*player, countdown, status);
+                game->draw_and_display(countdown, status);
                 break;
             }
 
-            game->draw_and_display(*player, countdown, status);
+            game->draw_and_display(countdown, status);
 
             if (status == Win)
             {
-                highScores.updateHighScores(Score(name.c_str(),player->getScore(), player->getBruises(), 60 - countdown, time(0)));
+                highScores.updateHighScores(Score(name.c_str(),game->getScore(), game->getBruises(), 60 - countdown, time(0)));
                 highScores.WriteHighScoresFile();
 
                 break;
@@ -176,8 +172,7 @@ int main()
             if (status == GameOver) break;
 
         }
-        playAgain = game->playAgain(*player, countdown);
-        delete player;
+        playAgain = game->playAgain(countdown);
         delete game;
     }
     return 0;
