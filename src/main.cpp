@@ -41,25 +41,16 @@ int main()
 
     //GAME CLOCK & TIMER
     sf::Clock clock;
-    int countdown;    // move to Game class
     int timer;
-    GameStatus status;  // move to Game class
     sf::Event event;
     bool playAgain = true;
-    static bool bombUsed = false;// move to Game class
-    static bool lightUsed = false;// move to Game class
-    static bool jumpUsed = false;// move to Game class
 
     // Game Loop starts here ///////////////////////////
     while (playAgain)
     {
-        bombUsed = false;
-        lightUsed = false;
-        jumpUsed = false;
-        countdown = 60;
-        status = NotStarted;
+        //status = NotStarted;
         game = new Game(window, sounds, name);
-        game -> flash(status);
+        game -> flash();
         music.play();
 
         while (game->getWindow().isOpen())
@@ -68,55 +59,33 @@ int main()
             // since the last iteration of the main loop.
             while (game->getWindow().pollEvent(event))
             {
-                if (event.type == sf::Event::Closed)
-                {
-                    game->getWindow().close();
-                }
+                if (event.type == sf::Event::Closed) game->getWindow().close();
                 else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) game->getWindow().close();
                 else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game->toggleDisplayMaze();
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
                 {
-                    game->flash(status);
-                    game->decrementScore();
-                    game->incrementBruises();
-                    // add a rubber wall
-                    game->getGrid()->AddARandomWall("rubber");
-                    // add a solid wall
-                    game->getGrid()->AddARandomWall();
-                    // bounce player
-                    game->bounce();  // simplify
-                    sounds.getRubberSound().play();
-                    countdown -= 3;
+                    if (game->flash()) sounds.getBellSound().play();
+                    else sounds.getFartSound().play();
+                    break;
                 }
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) game->getWindow().close();
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))   // bomb
                 {
-                    if (!bombUsed)
-                    {
-                        sounds.getExplosionSound().play();
-                        game->bomb();
-                        bombUsed = true;
-                        countdown -= 3;
-                        break;
-                    }
-                    else
-                    {
-                        sounds.getFartSound().play();
-                        break;
-                    }
+                    if (game->bomb()) sounds.getExplosionSound().play();
+                    else sounds.getFartSound().play();
+                    break;
                 }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L) && lightUsed == false)   // light
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))   // light
                 {
-                    sounds.getLightSound().play();
-                    game->light();
-                    countdown -= 3;
-                    lightUsed = true;
+                    if (game->light()) sounds.getLightSound().play();
+                    else sounds.getFartSound().play();
+                    break;
                 }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J) && jumpUsed == false)
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))   // jump
                 {
-                    cellContents = game->jump();
-                    countdown -= 3;
-                    jumpUsed = true;
+                    if (game->getPlayer()->jumped()) sounds.getFartSound().play();
+                    else cellContents = game->jump();
+                    break;
                 }
 
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = game->move(Up);
@@ -124,7 +93,7 @@ int main()
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = game->move(Left);
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
                 {
-                    if (status == NotStarted) status = Active;
+                    if (game->getStatus() == Game::NotStarted) game->setStatus(Game::Active);
                     cellContents = game->move(Right);
                 }
                 else break;
@@ -137,42 +106,37 @@ int main()
                 if (cellContents == Grid::Win)
                 {
                     sounds.getWinSound().play();
-                    status = Win;
+                    game->setStatus(Game::Win);
+                    game->winlose();
+                    break;
+                }
+                if (cellContents == Grid::Loss)
+                {
+                    sounds.getBooSound().play();
+                    game->setStatus(Game::Loss);
+                    game->winlose();
                     break;
                 }
             }
-            if (status != NotStarted)
+
+            // Increment time clock
+            if (game->getStatus() == Game::Active)
             {
                 timer = clock.getElapsedTime().asSeconds();
                 if (timer > 0)
                 {
-                    countdown--;
+                    game->getPlayer()->decrementCountdown();
                     clock.restart();
                     if (music.getStatus() == sf::SoundSource::Playing) music.stop();
                 }
             }
 
-            // loss
-            if (countdown <= 0 or game->getBruises() >= 50)
-            {
-                status = Loss;
-                game->draw_and_display(countdown, status);
-                break;
-            }
-
-            game->draw_and_display(countdown, status);
-
-            if (status == Win)
-            {
-                highScores.updateHighScores(Score(name.c_str(),game->getScore(), game->getBruises(), 60 - countdown, time(0)));
-                highScores.WriteHighScoresFile();
-
-                break;
-            }
-            if (status == GameOver) break;
-
+            game->draw_and_display();
+            if (game->getStatus() == Game::Loss || game->getStatus() == Game::Win) break;
         }
-        playAgain = game->playAgain(countdown);
+        highScores.updateHighScores(Score(name.c_str(),game->getScore(), game->getBruises(), 60 - game->countdown(), time(0)));
+        highScores.WriteHighScoresFile();
+        playAgain = game->playAgain();
         delete game;
     }
     return 0;

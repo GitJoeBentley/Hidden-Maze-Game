@@ -9,6 +9,7 @@ using namespace std;
 
 Player::Player(const string& name_, Grid& grid_)
     : name(name_), location(sf::Vector2i(-1,0)), grid(grid_), bruises(0), score(0), maxRow(0), maxCol(-1)
+    //: name(name_), location(sf::Vector2i(39,39)), grid(grid_), bruises(0), score(0), maxRow(0), maxCol(-1)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
@@ -73,6 +74,7 @@ Grid::Contents Player::processMove(const sf::Vector2i& newLocation)
     }
     updateScore();
     path.push_back(100 * newLocation.x + newLocation.y);
+    if (bruises >= 50 || countdown <= 0) cellContents = Grid::Loss;
     return cellContents;
 }
 
@@ -158,8 +160,10 @@ void Player::draw_path(sf::RenderWindow& window) const
     }
 }
 
-void Player::bomb()
+bool Player::bomb()
 {
+    if (bombUsed) return false;
+    bombUsed = true;
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {
         if (x < 0 || x >= 40) continue;
@@ -170,10 +174,14 @@ void Player::bomb()
             path.push_back(100 * x + y);
         }
     }
+    countdown -= 3;
+    return true;
 }
 
-void Player::light()
+bool Player::light()
 {
+    if (lightUsed) return false;
+    lightUsed = true;
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {
         if (x < 0 || x >= 40) continue;
@@ -183,5 +191,7 @@ void Player::light()
             path.push_back(100 * x + y);
         }
     }
+    countdown -= 3;
+    return true;
 }
 

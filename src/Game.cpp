@@ -69,13 +69,13 @@ void Game::refresh(const string& name_)
     player = new Player(name_, *grid);
 }
 
-void Game::draw_and_display(int countdown, GameStatus& status)
+void Game::draw_and_display()
 {
     window.clear();
     window.draw(border);
     window.draw(door2);
     window.draw(arrow2);
-    statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(player->getBruises()) + "\nScore " + std::to_string(player->getScore()));
+    statusText.setString(string("Time ") + std::to_string(countdown()) + "\nBruises " + std::to_string(player->getBruises()) + "\nScore " + std::to_string(player->getScore()));
     window.draw(statusText);
     window.draw(titleText);
     if (player->getPath().size() > 1) player->draw_path(window);
@@ -84,29 +84,14 @@ void Game::draw_and_display(int countdown, GameStatus& status)
         grid->draw_path(window);
         grid->draw(window);
     }
-    else border.setTexture(&borderTexture);;
+    else border.setTexture(&borderTexture);
 
-    switch (status)
-    {
-    case Active:
-        break;
-    case Loss:
-    case Win:
-        sounds.getWinSound().play();
-        winlose(status);
-        break;
-    case NotStarted:
-        start();
-        break;
-
-    default:
-        ;
-    }
+    if (status == NotStarted) start();
     player->draw(window);
     window.display();
 }
 
-bool Game::playAgain(int countdown)
+bool Game::playAgain()
 {
     unsigned fontsize = 32;
     defaultText.setCharacterSize(fontsize);
@@ -123,11 +108,11 @@ bool Game::playAgain(int countdown)
                           defaultFont,
                           fontsize);
     sf::Event event;
+    statusText.setFillColor(sf::Color::Green);
 
     while (window.isOpen())
     {
-        // Check all the window's events that were triggered
-        // since the last iteration of the main loop.
+        window.clear();
         while (window.pollEvent(event))
         {
             if      (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) return false;
@@ -138,7 +123,7 @@ bool Game::playAgain(int countdown)
         window.draw(border);
         window.draw(door2);
         window.draw(arrow2);
-        statusText.setString(string("Time ") + std::to_string(countdown) + "\nBruises " + std::to_string(getBruises()) + "\nScore " + std::to_string(getScore()));
+        statusText.setString(string("Time ") + std::to_string(countdown()) + "\nBruises " + std::to_string(getBruises()) + "\nScore " + std::to_string(getScore()));
         window.draw(statusText);
         window.draw(titleText);
         player->draw(window);
@@ -169,7 +154,7 @@ void Game::start()
     window.draw(arrow1);
 }
 
-void Game::winlose(GameStatus& status)
+void Game::winlose()
 {
     if (message)
     {
@@ -207,7 +192,6 @@ void Game::winlose(GameStatus& status)
 
     delete message;
     message = nullptr;
-    status = GameOver;
 }
 
 Grid::Contents Game::jump()
@@ -273,21 +257,35 @@ Grid::Contents Game::jump(Direction direction)
         delete message;
         message = nullptr;
     }
-
+    player->setJumped();
+    player->decrementCountdown(3);
     return player->processMove(newLocation);
 }
 
-void Game::flash(GameStatus& status)
+bool Game::flash()
 {
-    Clock clock;
-    int elapsedTime;
-    toggleDisplayMaze();
-    //status = Active;
-    while (window.isOpen())
+    if (!player->flashed())
     {
-        elapsedTime = clock.getElapsedTime().asMilliseconds();
-        if (elapsedTime > 750.0f) break;
-        draw_and_display(0, status);
+        Clock clock;
+        int elapsedTime;
+        toggleDisplayMaze();
+        while (window.isOpen())
+        {
+            elapsedTime = clock.getElapsedTime().asMilliseconds();
+            if (elapsedTime > 1000.0f) break;
+            draw_and_display();
+        }
+        toggleDisplayMaze();
+        if (status == Active)
+        {
+            player->setFlashed();
+            player->incrementBruises();
+            grid->AddARandomWall("rubber");
+            grid->AddARandomWall();
+            player->decrementCountdown(3);
+            bounce();
+        }
+        return true;
     }
-    toggleDisplayMaze();
+    return false;
 }

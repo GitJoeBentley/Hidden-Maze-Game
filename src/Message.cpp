@@ -1,6 +1,6 @@
 #include "Message.h"
 #include "Constants.h"
-#include "GameBoard.h"
+#include "Game.h"
 #include <string>
 #include <iostream>
 #include <algorithm>

@@ -34,9 +34,9 @@ Sounds::Sounds()
 
     fartBuffer.loadFromFile(FartSoundFile);
     fartSound.setBuffer(fartBuffer);
-    fartSound.setVolume(20.0f);
+    fartSound.setVolume(40.0f);
 
     lightBuffer.loadFromFile(LightSoundFile);
     lightSound.setBuffer(lightBuffer);
-    lightSound.setVolume(20.0f);
+    lightSound.setVolume(40.0f);
 }
