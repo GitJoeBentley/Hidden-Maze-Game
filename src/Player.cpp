@@ -7,9 +7,8 @@
 using namespace std;
 
 
-Player::Player(const string& name_, Grid& grid_)
-    : name(name_), location(sf::Vector2i(-1,0)), grid(grid_), bruises(0), score(0), maxRow(0), maxCol(-1)
-    //: name(name_), location(sf::Vector2i(39,39)), grid(grid_), bruises(0), score(0), maxRow(0), maxCol(-1)
+Player::Player(const string& name_, Grid& grid_, Sounds& sounds_)
+    : name(name_), location(sf::Vector2i(-1,0)), grid(grid_), sounds(sounds_), bruises(0), score(0), maxRow(0), maxCol(-1)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
@@ -28,7 +27,10 @@ Grid::Contents Player::move(Direction direction)
             (location.x == 0 && direction == Left) ||
             (location.y == 39 && direction == Down) ||
             (location.x == 39 && location.y != 39 && direction == Right))
+    {
+        sounds.play(Sounds::Fart);
         return Grid::OutOfBounds;
+    }
     sf::Vector2i newLocation(location);
     if (location.x == -1 && direction != Right) return Grid::Empty;
     switch (direction)
@@ -47,7 +49,6 @@ Grid::Contents Player::move(Direction direction)
     default:
         ;
     }
-
     return processMove(newLocation);
 }
 
@@ -58,10 +59,12 @@ Grid::Contents Player::processMove(const sf::Vector2i& newLocation)
     switch (cellContents)
     {
     case Grid::Empty:
+        sounds.play(Sounds::Empty);
         location.x = newLocation.x;
         location.y = newLocation.y;
         break;
     case Grid::Wall:
+        sounds.play(Sounds::Wall);
         bruises++;
         break;
     case Grid::RubberWall:
@@ -162,8 +165,14 @@ void Player::draw_path(sf::RenderWindow& window) const
 
 bool Player::bomb()
 {
-    if (bombUsed) return false;
+    if (bombUsed)
+    {
+        sounds.play(Sounds::Fart);
+        return false;
+    }
+
     bombUsed = true;
+    sounds.play(Sounds::Bomb);
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {
         if (x < 0 || x >= 40) continue;
@@ -180,8 +189,13 @@ bool Player::bomb()
 
 bool Player::light()
 {
-    if (lightUsed) return false;
+    if (lightUsed)
+    {
+        sounds.play(Sounds::Fart);
+        return false;
+    }
     lightUsed = true;
+    sounds.play(Sounds::Light);
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {
         if (x < 0 || x >= 40) continue;

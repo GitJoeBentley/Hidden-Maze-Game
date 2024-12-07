@@ -59,6 +59,7 @@ void Grid::AddARandomWall(const std::string& type)
     // Make sure location is empty and not in the path
     do
     {
+// TODO (Joe#1#): Use constant for 40
         row = rand() % 40;
         col = rand() % 40;
     }
@@ -74,10 +75,8 @@ void Grid::AddARandomWall(const std::string& type)
     else
     {
         cell[row][col]->setFillColor(sf::Color(sf::Color::Magenta));
-        //cout << "Random rubber wall added at " << col << ',' << row << endl;
         numWalls++;
     }
-    //cout << "Random wall added at " << col << ',' << row << endl;
 }
 
 Grid::~Grid()
@@ -178,7 +177,7 @@ void Grid::generate_path()
     {
         x = path[i] / 100;
         y = path[i] % 100;
-        step[i].setRadius(3.0f);
+        step[i].setRadius(4.0f);
         step[i].setPosition(sf::Vector2f(WindowHorizontalOffset + x * CellWidth, WindowVerticalOffset + y * CellWidth));
         step[i].setOrigin(-CellWidth / 2.0f, -CellWidth / 2.0f);
         step[i].setFillColor(sf::Color(sf::Color::Red));

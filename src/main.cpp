@@ -27,9 +27,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(GameSize.x, GameSize.y),"Hidden Maze Game",sf::Style::Close);
     window.setFramerateLimit(60);
 
-    Sounds sounds;
     HighScores highScores;
-    Grid::Contents cellContents;
     std::string name = welcome(window, highScores);
 
     Game* game;
@@ -45,7 +43,6 @@ int main()
     {
         game = new Game(window, name);
         game -> flash();
-        sounds.playmusic();
 
         while (game->getWindow().isOpen())
         {
@@ -54,63 +51,18 @@ int main()
             while (game->getWindow().pollEvent(event))
             {
                 if (event.type == sf::Event::Closed) game->getWindow().close();
-                else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape)) game->getWindow().close();
-                else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::F3)) game->toggleDisplayMaze();
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) game->getWindow().close();
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))   // flash
-                {
-                    if (game->flash()) sounds.play(Sounds::Bell);
-                    else sounds.play(Sounds::Fart);
-                    break;
-                }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))   // bomb
-                {
-                    if (game->bomb()) sounds.play(Sounds::Bomb);
-                    else sounds.play(Sounds::Fart);
-                    break;
-                }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))   // light
-                {
-                    if (game->light()) sounds.play(Sounds::Light);
-                    else sounds.play(Sounds::Fart);
-                    break;
-                }
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))   // jump
-                {
-                    if (game->getPlayer()->jumped()) sounds.play(Sounds::Fart);
-                    else cellContents = game->jump();
-                    break;
-                }
-
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))    cellContents = game->move(Up);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))  cellContents = game->move(Down);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))  cellContents = game->move(Left);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-                {
-                    if (game->getStatus() == Game::NotStarted) game->setStatus(Game::Active);
-                    cellContents = game->move(Right);
-                }
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) game->getWindow().close();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3))     game->toggleDisplayMaze();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))      game->getWindow().close();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))      game -> flash();  // flash
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))      game->bomb();     // bomb
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))      game->light();    // light
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))      game->jump();     // jump
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))     game->move(Up);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))   game->move(Down);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))   game->move(Left);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))  game->move(Right);
                 else break;
-
-
-                if (cellContents == Grid::Empty)       sounds.play(Sounds::Step);
-                if (cellContents == Grid::Wall)        sounds.play(Sounds::Wall);
-                if (cellContents == Grid::RubberWall)  sounds.play(Sounds::Rubber);
-                if (cellContents == Grid::OutOfBounds) sounds.play(Sounds::Fart);
-                if (cellContents == Grid::Win)
-                {
-                    sounds.play(Sounds::Win);
-                    game->setStatus(Game::Win);
-                    game->winlose();
-                    break;
-                }
-                if (cellContents == Grid::Loss)
-                {
-                    sounds.play(Sounds::Lose);
-                    game->setStatus(Game::Loss);
-                    game->winlose();
-                    break;
-                }
             }
 
             // Increment time clock
@@ -121,7 +73,7 @@ int main()
                 {
                     game->getPlayer()->decrementCountdown();
                     clock.restart();
-                    sounds.stopmusic();
+                    game->getSounds().stopmusic();
                 }
             }
 

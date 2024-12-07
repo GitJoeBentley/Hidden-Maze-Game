@@ -16,7 +16,7 @@ sf::Font Game::winFont;
 
 Game::Game(sf::RenderWindow& wind, const std::string& name_)
     : window(wind),
-      //sounds(),
+      sounds(),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
       door1(CellSize),door2(CellSize),
       displayMaze(false)
@@ -59,6 +59,7 @@ Game::Game(sf::RenderWindow& wind, const std::string& name_)
 
     defaultText.setStyle(sf::Text::Bold);
     refresh(name_);
+    sounds.playmusic();
 }
 
 void Game::refresh(const string& name_)
@@ -66,7 +67,7 @@ void Game::refresh(const string& name_)
     if (grid) delete grid;
     if (player) delete player;
     grid = new Grid();
-    player = new Player(name_, *grid);
+    player = new Player(name_, *grid, sounds);
 }
 
 void Game::draw_and_display()
@@ -164,6 +165,7 @@ void Game::winlose()
     {
         auto fontsize = 64;
         string text = "Yeah!!!   You win";
+        sounds.play(Sounds::Win);
 
         message = new Message(text,
                               sf::Vector2f(0.60f * text.length()*fontsize, 1.5f * fontsize),
@@ -177,6 +179,7 @@ void Game::winlose()
     {
         auto fontsize = 64;
         string text = "Too bad, you lose";
+        sounds.play(Sounds::Loss);
         defaultText.setCharacterSize(fontsize);
         message = new Message(text,
                               sf::Vector2f(0.60f * text.length()*fontsize, 1.5f * fontsize),
@@ -195,6 +198,10 @@ void Game::winlose()
 
 Grid::Contents Game::jump()
 {
+    if (player->jumped()) {
+        sounds.play(Sounds::Fart);
+        return Grid::Empty;
+    }
     unsigned fontsize = 24;
     defaultText.setCharacterSize(fontsize);
     std::string text = "Press an arrow key to indicate\n     the direction of the jump\n or Escape to cancel the jump";
@@ -208,8 +215,6 @@ Grid::Contents Game::jump()
 
     while (window.isOpen())
     {
-        // Check all the window's events that were triggered
-        // since the last iteration of the main loop.
         while (window.pollEvent(event))
         {
             if      (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) return Grid::OutOfBounds;
@@ -286,5 +291,6 @@ bool Game::flash()
         }
         return true;
     }
+    sounds.play(Sounds::Fart);
     return false;
 }
