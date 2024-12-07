@@ -72,6 +72,7 @@ public:
     void refresh(const std::string& name_);
     void bounce()
     {
+        sounds.play(Sounds::Bounce);
         player->bounce();
     }
     int getScore() const
@@ -82,9 +83,23 @@ public:
     {
         return player->getBruises();
     }
-    Grid::Contents move(Direction direction)
+    void move(Direction direction)
     {
-        return player-> move(direction);
+        if (status == Game::NotStarted) status = Game::Active;
+        Grid::Contents contents = player-> move(direction);
+
+        if (contents == Grid::Win)
+        {
+            status = Game::Win;
+            winlose();
+        }
+        if (contents == Grid::Loss)
+        {
+            status = Game::Loss;
+            winlose();
+        }
+
+        return;
     }
     bool bomb()
     {
@@ -98,13 +113,23 @@ public:
     {
         return player -> getCountdown();
     }
-    Game::GameStatus getStatus() const { return status; }
-    void setStatus(Game::GameStatus status_) { status = status_;}
+    Game::GameStatus getStatus() const
+    {
+        return status;
+    }
+    void setStatus(Game::GameStatus status_)
+    {
+        status = status_;
+    }
+    Sounds& getSounds()
+    {
+        return sounds;
+    }
 
 private:
     sf::RenderWindow& window;
     GameStatus status = NotStarted;
-    //Sounds sounds;
+    Sounds sounds;
     sf::RectangleShape border;
     sf::RectangleShape door1;
     sf::RectangleShape door2;

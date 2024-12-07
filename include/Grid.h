@@ -11,7 +11,9 @@ class Grid
     public:
         enum Contents { Empty, Wall, RubberWall, Win, Loss, OutOfBounds};
         Grid();
-        virtual ~Grid();
+// TODO (Joe#1#): Write Grid destructor ...
+//
+        ~Grid();
         void draw(sf::RenderWindow&);
         void generate_path();
         void print_path() const;
@@ -29,6 +31,8 @@ class Grid
         int numWalls;
         sf::CircleShape* step;
         std::vector<int> path;
+// TODO (Joe#1#): Use constant for array dimensions ...
+//
         sf::RectangleShape* cell[40][40];
 
         void update_path(int x, int y);

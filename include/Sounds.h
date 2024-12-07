@@ -7,7 +7,7 @@
 class Sounds
 {
 public:
-    enum SoundName{Step, Rubber, Wall, Bell, Light, Bomb, Fart, Win, Lose, NumberOfSounds};
+    enum SoundName{Empty, Bounce, Wall, Bell, Light, Bomb, Fart, Win, Loss, NumberOfSounds};
     Sounds();
     ~Sounds();
     void play(SoundName);
