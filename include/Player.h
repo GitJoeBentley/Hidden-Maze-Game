@@ -24,8 +24,14 @@ class Player : public sf::RectangleShape
         sf::Sprite& getPlayer() { return player; }
         void incrementBruises() { bruises++; }
         void decrementScore() { score--; }
-        void bomb();
-        void light();
+        void decrementCountdown(int count = 1) { countdown -= count; }
+        int getCountdown() const { return countdown; }
+        bool bomb();
+        bool light();
+        bool flashed() const { return flashUsed; }
+        bool jumped() const { return jumpUsed; }
+        void setJumped() { jumpUsed = true; }
+        void setFlashed() { flashUsed = true; }
         Grid::Contents processMove(const sf::Vector2i& newLocation);
 
     protected:
@@ -38,6 +44,11 @@ class Player : public sf::RectangleShape
         sf::Sprite player;
         int bruises;
         int score;
+        int countdown = 60;
+        bool bombUsed = false;
+        bool lightUsed = false;
+        bool jumpUsed = false;
+        bool flashUsed = false;
         int maxRow;
         int maxCol;
         std::vector<int> path;

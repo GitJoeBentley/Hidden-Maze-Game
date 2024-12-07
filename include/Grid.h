@@ -9,7 +9,7 @@
 class Grid
 {
     public:
-        enum Contents { Empty, Wall, RubberWall, Win, OutOfBounds};
+        enum Contents { Empty, Wall, RubberWall, Win, Loss, OutOfBounds};
         Grid();
         virtual ~Grid();
         void draw(sf::RenderWindow&);

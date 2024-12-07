@@ -19,6 +19,7 @@ public:
     static sf::Font statusFont;
     static sf::Font defaultFont;
     static sf::Font winFont;
+    enum GameStatus {NotStarted, Active, Paused, Win, Loss, GameOver};
 
     Game(sf::RenderWindow& wind, Sounds& sounds, const std::string& name);
     ~Game()
@@ -30,7 +31,7 @@ public:
         delete message;
         message = nullptr;
     }
-    void draw_and_display(int countdown, GameStatus& status);
+    void draw_and_display();
     sf::RenderWindow& getWindow()
     {
         return window;
@@ -62,24 +63,48 @@ public:
         player->decrementScore();
     }
 
-    void flash(GameStatus& status);
+    bool flash();
     Grid::Contents jump();
     Grid::Contents jump(Direction direction);
-    void winlose(GameStatus& status);
+    void winlose();
     void start();
-    bool playAgain(int countdown);
+    bool playAgain();
     void refresh(const std::string& name_);
-    void bounce() { player->bounce(); }
-    int getScore() const { return player->getScore(); }
-    int getBruises() const { return player->getBruises(); }
-    Grid::Contents move(Direction direction) { return player-> move(direction); }
-    void bomb() { player -> bomb(); }
-    void light() { player -> light(); }
+    void bounce()
+    {
+        player->bounce();
+    }
+    int getScore() const
+    {
+        return player->getScore();
+    }
+    int getBruises() const
+    {
+        return player->getBruises();
+    }
+    Grid::Contents move(Direction direction)
+    {
+        return player-> move(direction);
+    }
+    bool bomb()
+    {
+        return player -> bomb();
+    }
+    bool light()
+    {
+        return player -> light();
+    }
+    int countdown() const
+    {
+        return player -> getCountdown();
+    }
+    Game::GameStatus getStatus() const { return status; }
+    void setStatus(Game::GameStatus status_) { status = status_;}
 
 private:
     sf::RenderWindow& window;
+    GameStatus status = NotStarted;
     Sounds& sounds;
-    //Player player(const sf::Texture& playerTexture, sf::Vector2i loc(-1,0));
     sf::RectangleShape border;
     sf::RectangleShape door1;
     sf::RectangleShape door2;
