@@ -7,46 +7,16 @@
 class Sounds
 {
 public:
+    enum SoundName{Step, Rubber, Wall, Bell, Light, Bomb, Fart, Win, Lose, NumberOfSounds};
     Sounds();
-    sf::Sound& getRubberSound()  { return rubberSound; }
-    sf::Sound& getStepSound()    { return stepSound; }
-    sf::Sound& getHitWallSound() { return hitWallSound; }
-    sf::Sound& getBooSound() { return booSound; }
-    sf::Sound& getWinSound() { return winSound; }
-    sf::Sound& getBellSound() { return bellSound; }
-    sf::Sound& getExplosionSound() { return explosionSound; }
-    sf::Sound& getFartSound() { return fartSound; }
-    sf::Sound& getLightSound() { return lightSound; }
-
-protected:
-
+    ~Sounds();
+    void play(SoundName);
+    void playmusic();
+    void stopmusic();
 private:
-    sf::SoundBuffer rubberBuffer;
-    sf::Sound rubberSound;
-
-    sf::SoundBuffer stepBuffer;
-    sf::Sound stepSound;
-
-    sf::SoundBuffer hitWallBuffer;
-    sf::Sound hitWallSound;
-
-    sf::SoundBuffer booBuffer;
-    sf::Sound booSound;
-
-    sf::SoundBuffer winBuffer;
-    sf::Sound winSound;
-
-    sf::SoundBuffer bellBuffer;
-    sf::Sound bellSound;
-
-    sf::SoundBuffer explosionBuffer;
-    sf::Sound explosionSound;
-
-    sf::SoundBuffer fartBuffer;
-    sf::Sound fartSound;
-
-    sf::SoundBuffer lightBuffer;
-    sf::Sound lightSound;
+    sf::SoundBuffer* buffer;
+    sf::Sound* sound;
+    sf::Music music;
 };
 
 #endif // SOUNDS_H

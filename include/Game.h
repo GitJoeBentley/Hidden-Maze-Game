@@ -21,7 +21,7 @@ public:
     static sf::Font winFont;
     enum GameStatus {NotStarted, Active, Paused, Win, Loss, GameOver};
 
-    Game(sf::RenderWindow& wind, Sounds& sounds, const std::string& name);
+    Game(sf::RenderWindow& wind, const std::string& name);
     ~Game()
     {
         delete grid;
@@ -104,7 +104,7 @@ public:
 private:
     sf::RenderWindow& window;
     GameStatus status = NotStarted;
-    Sounds& sounds;
+    //Sounds sounds;
     sf::RectangleShape border;
     sf::RectangleShape door1;
     sf::RectangleShape door2;
