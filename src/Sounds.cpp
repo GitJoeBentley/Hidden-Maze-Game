@@ -2,41 +2,42 @@
 #include <string>
 using namespace std;
 
-Sounds::Sounds()
+Sounds::Sounds() : buffer(new sf::SoundBuffer[NumberOfSounds]), sound(new sf::Sound[NumberOfSounds])
 {
-    rubberBuffer.loadFromFile(RubberSoundFile);
-    rubberSound.setBuffer(rubberBuffer);
-    rubberSound.setVolume(40.0f);
+    string soundfile[NumberOfSounds] = {StepSoundFile, RubberSoundFile, HitWallSoundFile, BellSoundFile, LightSoundFile,
+                                        BombSoundFile, FartSoundFile, WinSoundFile, LoseSoundFile
+                                       };
+    for (int i = 0; i < NumberOfSounds; i++)
+    {
+        buffer[i].loadFromFile(soundfile[i]);
+        sound[i].setBuffer(buffer[i]);
+        sound[i].setVolume(40);
+    }
+    // Music
 
-    stepBuffer.loadFromFile(StepSoundFile);
-    stepSound.setBuffer(stepBuffer);
-    stepSound.setVolume(40.0f);
+    music.openFromFile(MusicStartFile);
+    music.setVolume(20);
+}
 
-    hitWallBuffer.loadFromFile(HitWallSoundFile);
-    hitWallSound.setBuffer(hitWallBuffer);
-    hitWallSound.setVolume(40.0f);
+Sounds::~Sounds()
+{
+    delete [] sound;
+    delete [] buffer;
+    sound = nullptr;
+    buffer = nullptr;
+}
 
-    booBuffer.loadFromFile(BooSoundFile);
-    booSound.setBuffer(booBuffer);
-    booSound.setVolume(35.0f);
+void Sounds::play(SoundName name)
+{
+    sound[name].play();
+}
 
-    winBuffer.loadFromFile(WinSoundFile);
-    winSound.setBuffer(winBuffer);
-    winSound.setVolume(35.0f);
+void Sounds::playmusic()
+{
+    music.play();
+}
 
-    bellBuffer.loadFromFile(BellSoundFile);
-    bellSound.setBuffer(bellBuffer);
-    bellSound.setVolume(20.0f);
-
-    explosionBuffer.loadFromFile(ExplosionSoundFile);
-    explosionSound.setBuffer(explosionBuffer);
-    explosionSound.setVolume(40.0f);
-
-    fartBuffer.loadFromFile(FartSoundFile);
-    fartSound.setBuffer(fartBuffer);
-    fartSound.setVolume(40.0f);
-
-    lightBuffer.loadFromFile(LightSoundFile);
-    lightSound.setBuffer(lightBuffer);
-    lightSound.setVolume(40.0f);
+void Sounds::stopmusic()
+{
+    if (music.getStatus() == sf::SoundSource::Playing) music.stop();
 }

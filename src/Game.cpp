@@ -14,9 +14,9 @@ sf::Font Game::statusFont;
 sf::Font Game::defaultFont;
 sf::Font Game::winFont;
 
-Game::Game(sf::RenderWindow& wind, Sounds& sound, const std::string& name_)
+Game::Game(sf::RenderWindow& wind, const std::string& name_)
     : window(wind),
-      sounds(sound),
+      //sounds(),
       border(sf::Vector2f(GameWindowSize, GameWindowSize)),
       door1(CellSize),door2(CellSize),
       displayMaze(false)
@@ -86,7 +86,6 @@ void Game::draw_and_display()
     }
     else border.setTexture(&borderTexture);
 
-    if (status == NotStarted) start();
     player->draw(window);
     window.display();
 }
