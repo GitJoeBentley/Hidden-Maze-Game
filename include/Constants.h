@@ -7,9 +7,9 @@
 const sf::Vector2u GameSize(1000, 1024);
 const float CellWidth = 20.0f;
 const int NumRows = 40;
-const int NumCols = 40;
+const int NumCols = NumRows;
 const  sf::Vector2f CellSize(CellWidth, CellWidth);
-const float GameWindowSize = 40 * CellWidth;
+const float GameWindowSize = NumRows * CellWidth;
 const float WindowHorizontalOffset = 100.0f;
 const float WindowVerticalOffset = 150.0f;
 
