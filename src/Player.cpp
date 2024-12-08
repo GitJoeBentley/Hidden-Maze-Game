@@ -25,8 +25,8 @@ Grid::Contents Player::move(Direction direction)
 {
     if ((location.y == 0 && direction == Up) ||
             (location.x == 0 && direction == Left) ||
-            (location.y == 39 && direction == Down) ||
-            (location.x == 39 && location.y != 39 && direction == Right))
+            (location.y == NumRows-1 && direction == Down) ||
+            (location.x == NumRows-1 && location.y != NumRows-1 && direction == Right))
     {
         sounds.play(Sounds::Fart);
         return Grid::OutOfBounds;
@@ -175,10 +175,10 @@ bool Player::bomb()
     sounds.play(Sounds::Bomb);
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {
-        if (x < 0 || x >= 40) continue;
+        if (x < 0 || x >= NumRows) continue;
         for (int y = location.y - 1; y <= location.y + 1; y++)
         {
-            if (y < 0 || y >= 40 || (x == location.x && y == location.y)) continue;
+            if (y < 0 || y >= NumRows || (x == location.x && y == location.y)) continue;
             grid.clearCell(x,y);
             path.push_back(100 * x + y);
         }
@@ -198,10 +198,10 @@ bool Player::light()
     sounds.play(Sounds::Light);
     for (int x = location.x - 1; x <= location.x + 1; x++)
     {
-        if (x < 0 || x >= 40) continue;
+        if (x < 0 || x >= NumRows) continue;
         for (int y = location.y - 1; y <= location.y + 1; y++)
         {
-            if (y < 0 || y >= 40) continue;
+            if (y < 0 || y >= NumRows) continue;
             path.push_back(100 * x + y);
         }
     }

@@ -29,13 +29,13 @@ Game::Game(sf::RenderWindow& wind, const std::string& name_)
     door1.setFillColor(sf::Color(0,0,0));
     door1.setPosition(WindowHorizontalOffset - CellWidth, WindowVerticalOffset + 0 * CellWidth);
     door2.setFillColor(sf::Color(sf::Color::Blue));
-    door2.setPosition(WindowHorizontalOffset + 40 * CellWidth, WindowVerticalOffset + 39 * CellWidth);
+    door2.setPosition(WindowHorizontalOffset + NumRows * CellWidth, WindowVerticalOffset + (NumRows-1) * CellWidth);
 
     arrowTexture.loadFromFile(ArrowImageFile);
     arrow1.setTexture(arrowTexture);
     arrow2.setTexture(arrowTexture);
     arrow1.setPosition(WindowHorizontalOffset - 2 * CellWidth, WindowVerticalOffset + 0 * CellWidth);
-    arrow2.setPosition(WindowHorizontalOffset + 41 * CellWidth, WindowVerticalOffset + 39 * CellWidth);
+    arrow2.setPosition(WindowHorizontalOffset + (NumRows+1) * CellWidth, WindowVerticalOffset + (NumRows-1) * CellWidth);
 
     titleFont.loadFromFile(TitleFontFile);
     statusFont.loadFromFile(StatusFontFile);

@@ -10,7 +10,7 @@ using namespace std;
 Grid::Grid() : numWalls(0), step(nullptr)
 {
     for (int r = 0; r < NumRows; r++)
-        for (int c = 0; c < 40; c++)
+        for (int c = 0; c < NumCols; c++)
             cell[r][c] = nullptr;
 
     // Straight-line walls
@@ -59,9 +59,8 @@ void Grid::AddARandomWall(const std::string& type)
     // Make sure location is empty and not in the path
     do
     {
-// TODO (Joe#1#): Use constant for 40
-        row = rand() % 40;
-        col = rand() % 40;
+        row = rand() % NumRows;
+        col = rand() % NumCols;
     }
     while (locationIsInThePath(col, row) && !(cell[row][col]));
 
@@ -81,14 +80,21 @@ void Grid::AddARandomWall(const std::string& type)
 
 Grid::~Grid()
 {
-    //dtor
+    for (int r = 0; r < NumRows; r++)
+        for (int c = 0; c < NumCols; c++)
+            if (cell[r][c])
+            {
+                delete cell[r][c];
+                cell[r][c] = nullptr;
+            }
+    delete [] step;
 }
 
 void Grid::draw(sf::RenderWindow& window)
 {
-    for (int r = 0; r < 40; r++)
+    for (int r = 0; r < NumRows; r++)
     {
-        for (int c = 0; c < 40; c++)
+        for (int c = 0; c < NumCols; c++)
         {
             if (cell[r][c])
             {
@@ -103,13 +109,13 @@ void Grid::generate_path()
     update_path(0,0);
     int move, last_move = -1;
     int x = 0, y = 0;
-    while (!(x == 39 and y == 39))
+    while (!(x == NumRows-1 and y == NumRows-1))
     {
         move = rand() % 6;
         switch (move)
         {
         case 0:
-            if (x < 39 && last_move != 4)
+            if (x < NumRows-1 && last_move != 4)
             {
                 x++;
                 update_path(x, y);
@@ -117,7 +123,7 @@ void Grid::generate_path()
             else move = last_move;
             break;
         case 1:
-            if (x < 38 && last_move != 4)
+            if (x < NumRows-2 && last_move != 4)
             {
                 x++;
                 update_path(x, y);
@@ -127,7 +133,7 @@ void Grid::generate_path()
             else move = last_move;
             break;
         case 2:
-            if (y < 39 && last_move != 5)
+            if (y < NumRows-1 && last_move != 5)
             {
                 y++;
                 update_path(x, y);
@@ -135,7 +141,7 @@ void Grid::generate_path()
             else move = last_move;
             break;
         case 3:
-            if (y < 38 && last_move != 5)
+            if (y < NumRows-2 && last_move != 5)
             {
                 y++;
                 update_path(x, y);
@@ -231,7 +237,7 @@ bool Grid::locationIsInThePath(int x, int y) const
 
 Grid::Contents Grid::getCellContents(int row, int col) const
 {
-    if (row == 40 and col == 39) return Win;
+    if (row == NumRows and col == NumCols-1) return Win;
     sf::RectangleShape* ptrCell = getCell(row, col);
     if (ptrCell)
     {
