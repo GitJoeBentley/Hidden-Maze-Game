@@ -10,7 +10,7 @@
 #include "HighScores.h"
 #include "Constants.h"
 #include "Message.h"
-#include "Types.h"
+//#include "Types.h"
 
 class Game
 {
@@ -65,7 +65,7 @@ public:
 
     bool flash();
     Grid::Contents jump();
-    Grid::Contents jump(Direction direction);
+    Grid::Contents jump(Player::Direction direction);
     void winlose();
     void start();
     bool playAgain();
@@ -83,7 +83,7 @@ public:
     {
         return player->getBruises();
     }
-    void move(Direction direction)
+    void move(Player::Direction direction)
     {
         if (status == Game::NotStarted) status = Game::Active;
         Grid::Contents contents = player-> move(direction);

@@ -1,15 +1,18 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "SFML/Graphics.hpp"
-#include "Types.h"
+//#include "Types.h"
 #include "Grid.h"
+#include "Sounds.h"
 #include <vector>
 #include <string>
 
 class Player : public sf::RectangleShape
 {
     public:
-        Player(const std::string& name, Grid& grid);
+        enum Direction {Up, Down, Left, Right};
+
+        Player(const std::string& name, Grid& grid, Sounds& sounds_);
         void draw(sf::RenderWindow& window);
         Grid::Contents move(Direction);
         int getBruises() const { return bruises; }
@@ -40,6 +43,7 @@ class Player : public sf::RectangleShape
         std::string name;
         sf::Vector2i location;
         Grid& grid;
+        Sounds& sounds;
         sf::Texture playerTexture;
         sf::Sprite player;
         int bruises;
