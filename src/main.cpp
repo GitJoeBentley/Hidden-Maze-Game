@@ -12,7 +12,6 @@
 #include "Game.h"
 #include "HighScores.h"
 #include "Sounds.h"
-#include "Types.h"
 #include "Message.h"
 using namespace std;
 
