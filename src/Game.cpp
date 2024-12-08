@@ -218,10 +218,10 @@ Grid::Contents Game::jump()
         while (window.pollEvent(event))
         {
             if      (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) return Grid::OutOfBounds;
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) return jump(Up);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) return  jump(Down);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) return jump(Left);
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) return jump(Right);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) return jump(Player::Up);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) return  jump(Player::Down);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) return jump(Player::Left);
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) return jump(Player::Right);
             else break;
         }
 
@@ -231,27 +231,27 @@ Grid::Contents Game::jump()
     return Grid::OutOfBounds;
 }
 
-Grid::Contents Game::jump(Direction direction)
+Grid::Contents Game::jump(Player::Direction direction)
 {
     sf::Vector2i location = player->getLocation();
-    if ((location.y < 2 && direction == Up) ||
-            (location.x < 2 && direction == Left) ||
-            (location.y > 38 && direction == Down) ||
-            (location.x > 38 && direction == Right))
+    if ((location.y < 2 && direction == Player::Up) ||
+            (location.x < 2 && direction == Player::Left) ||
+            (location.y > 38 && direction == Player::Down) ||
+            (location.x > 38 && direction == Player::Right))
         return Grid::OutOfBounds;
     sf::Vector2i newLocation(location);
     switch (direction)
     {
-    case Up:
+    case Player::Up:
         newLocation.y-=2;
         break;
-    case Down:
+    case Player::Down:
         newLocation.y+=2;
         break;
-    case Left:
+    case Player::Left:
         newLocation.x-=2;
         break;
-    case Right:
+    case Player::Right:
         newLocation.x+=2;
     default:
         ;

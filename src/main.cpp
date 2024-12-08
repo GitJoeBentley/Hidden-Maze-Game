@@ -44,24 +44,24 @@ int main()
         game = new Game(window, name);
         game -> flash();
 
-        while (game->getWindow().isOpen())
+        while (window.isOpen())
         {
             // Check all the window's events that were triggered
             // since the last iteration of the main loop.
             while (game->getWindow().pollEvent(event))
             {
                 if (event.type == sf::Event::Closed) game->getWindow().close();
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) game->getWindow().close();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) window.close();
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F3))     game->toggleDisplayMaze();
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))      game->getWindow().close();
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))      window.close();
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))      game -> flash();  // flash
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))      game->bomb();     // bomb
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))      game->light();    // light
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))      game->jump();     // jump
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))     game->move(Up);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))   game->move(Down);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))   game->move(Left);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))  game->move(Right);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))     game->move(Player::Up);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))   game->move(Player::Down);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))   game->move(Player::Left);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))  game->move(Player::Right);
                 else break;
             }
 
