@@ -67,7 +67,7 @@ int main()
             // Increment time clock
             if (game->getStatus() == Game::Active)
             {
-                timer = clock.getElapsedTime().asSeconds();
+                timer = static_cast<int> (clock.getElapsedTime().asSeconds());
                 if (timer > 0)
                 {
                     game->getPlayer()->decrementCountdown();
@@ -77,13 +77,16 @@ int main()
             }
 
             game->draw_and_display();
-            if (game->getStatus() == Game::Loss || game->getStatus() == Game::Win) break;
+            if (game->getStatus() == Game::Loss || game->getStatus() == Game::Win) {
+                highScores.updateHighScores(Score(name.c_str(), game->getScore(), game->getBruises(), 60 - game->countdown(), time(0)));
+                highScores.WriteHighScoresFile();
+                break;
+            }
         }
-        highScores.updateHighScores(Score(name.c_str(),game->getScore(), game->getBruises(), 60 - game->countdown(), time(0)));
-        highScores.WriteHighScoresFile();
         playAgain = game->playAgain();
         delete game;
     }
+    
     return 0;
 }
 

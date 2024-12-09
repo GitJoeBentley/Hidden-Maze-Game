@@ -145,7 +145,7 @@ void Game::start()
 
     message = new Message(text,
                           sf::Vector2f(0.67f * text.length()*fontsize, 2.1f * fontsize),
-                          sf::Vector2f(0.23 * GameSize.x, 0.4f * GameSize.y),
+                          sf::Vector2f(0.23f * GameSize.x, 0.4f * GameSize.y),
                           sf::Vector2f(0.31f * GameSize.x, 0.41f * GameSize.y),
                           defaultFont,
                           fontsize);
@@ -207,7 +207,7 @@ Grid::Contents Game::jump()
     std::string text = "Press an arrow key to indicate\n     the direction of the jump\n or Escape to cancel the jump";
     message = new Message(text,
                           sf::Vector2f(500.0f, 180.0f),
-                          sf::Vector2f(0.245 * GameSize.x, 0.35 * GameSize.y),
+                          sf::Vector2f(0.245f * GameSize.x, 0.35f * GameSize.y),
                           sf::Vector2f(0.33f * GameSize.x, 0.39f * GameSize.y),
                           defaultFont,
                           fontsize);
