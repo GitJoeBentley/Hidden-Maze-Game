@@ -23,8 +23,6 @@ class Grid
         void AddARandomWall(const std::string& = "solid");
         void clearCell(int x, int y);
 
-    protected:
-
     private:
         int numWalls;
         sf::CircleShape* step;

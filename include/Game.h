@@ -10,124 +10,51 @@
 #include "HighScores.h"
 #include "Constants.h"
 #include "Message.h"
+#include "Fonts.h"
 //#include "Types.h"
 
 class Game
 {
 public:
-    static sf::Font titleFont;
-    static sf::Font statusFont;
-    static sf::Font defaultFont;
-    static sf::Font winFont;
     enum GameStatus {NotStarted, Active, Paused, Win, Loss, GameOver};
 
-    Game(sf::RenderWindow& wind, const std::string& name);
-    ~Game()
-    {
-        delete grid;
-        grid = nullptr;
-        delete player;
-        player = nullptr;
-        delete message;
-        message = nullptr;
-    }
+    Game(sf::RenderWindow& wind, Fonts& fonts, const std::string& name);
+    ~Game();
+    void refresh(const std::string& name_);
+
+
     void draw_and_display();
-    sf::RenderWindow& getWindow()
-    {
-        return window;
-    }
-    sf::RectangleShape& getBorder()
-    {
-        return border;
-    }
 
-    void toggleDisplayMaze()
-    {
-        displayMaze = !displayMaze;
-    }
+    // getters
+    sf::RenderWindow& getWindow();
+    sf::RectangleShape& getBorder();
+    Grid* getGrid();
+    Player* getPlayer();
+    int getScore() const;
+    int getBruises() const;
+    Game::GameStatus getStatus() const;
+    Sounds& getSounds();
+    int getCountdown() const;
 
-    Grid* getGrid()
-    {
-        return grid;
-    }
-    Player* getPlayer()
-    {
-        return player;
-    }
-    void incrementBruises()
-    {
-        player->incrementBruises();
-    }
-    void decrementScore()
-    {
-        player->decrementScore();
-    }
+    //setters
+    void setStatus(Game::GameStatus status_);
+    void toggleDisplayMaze();
+    void incrementBruises();
+    void decrementScore();
 
     bool flash();
     Grid::Contents jump();
     Grid::Contents jump(Player::Direction direction);
-    void winlose();
     void start();
     bool playAgain();
-    void refresh(const std::string& name_);
-    void bounce()
-    {
-        sounds.play(Sounds::Bounce);
-        player->bounce();
-    }
-    int getScore() const
-    {
-        return player->getScore();
-    }
-    int getBruises() const
-    {
-        return player->getBruises();
-    }
-    void move(Player::Direction direction)
-    {
-        if (status == Game::NotStarted) status = Game::Active;
-        Grid::Contents contents = player-> move(direction);
-
-        if (contents == Grid::Win)
-        {
-            status = Game::Win;
-            winlose();
-        }
-        if (contents == Grid::Loss)
-        {
-            status = Game::Loss;
-            winlose();
-        }
-
-        return;
-    }
-    bool bomb()
-    {
-        return player -> bomb();
-    }
-    bool light()
-    {
-        return player -> light();
-    }
-    int countdown() const
-    {
-        return player -> getCountdown();
-    }
-    Game::GameStatus getStatus() const
-    {
-        return status;
-    }
-    void setStatus(Game::GameStatus status_)
-    {
-        status = status_;
-    }
-    Sounds& getSounds()
-    {
-        return sounds;
-    }
+    void bounce();
+    void move(Player::Direction direction);
+    bool bomb();
+    bool light();
 
 private:
     sf::RenderWindow& window;
+    Fonts& fonts;
     GameStatus status = NotStarted;
     Sounds sounds;
     sf::RectangleShape border;
@@ -139,12 +66,14 @@ private:
     sf::Sprite arrow2;
     sf::Text titleText;
     sf::Text statusText;
-    sf::Text defaultText;
-    sf::Text winText;
+
     bool displayMaze;
     Grid* grid = nullptr;
     Message* message = nullptr;
     Player* player = nullptr;
+    sf::RectangleShape timeBar;
+    const float timeBarStartWidth = 600;
+    const float timeBarHeight = 30;
 };
 
 #endif // Game_H

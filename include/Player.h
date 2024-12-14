@@ -37,8 +37,6 @@ class Player : public sf::RectangleShape
         void setFlashed() { flashUsed = true; }
         Grid::Contents processMove(const sf::Vector2i& newLocation);
 
-    protected:
-
     private:
         std::string name;
         sf::Vector2i location;
@@ -58,7 +56,6 @@ class Player : public sf::RectangleShape
         std::vector<int> path;
 
         void updateScore();
-
 };
 
 #endif // PLAYER_H
