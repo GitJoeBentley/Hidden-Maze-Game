@@ -94,7 +94,7 @@ int main()
         if (game->getStatus() == Game::Loss)
         {
             string txt;
-            game->getSounds().play(Sounds::Win);
+            game->getSounds().play(Sounds::Loss);
             if (game->getPlayer()->getBruises() >= 50) txt = "     You lose\nToo many bruises";
             else txt = " You lose\nOut of time";
             Msg msg(Text(txt, fonts.font("arial"), 60, window, sf::Color::Red));
@@ -106,6 +106,7 @@ int main()
         if (game->getStatus() == Game::Win)
         {
             Msg msg(Text("You won!!!", fonts.font("komikap"), 72, window, sf::Color::Green));
+            game->getSounds().play(Sounds::Win);
             msg.draw();
             window.display();
             sf::sleep(sf::Time(sf::seconds(5.0f)));

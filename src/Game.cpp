@@ -56,8 +56,6 @@ Game::~Game()
     grid = nullptr;
     delete player;
     player = nullptr;
-    delete message;
-    message = nullptr;
 }
 
 // getters
@@ -285,11 +283,6 @@ Grid::Contents Game::jump(Player::Direction direction)
         newLocation.x+=2;
     default:
         ;
-    }
-    if (message)
-    {
-        delete message;
-        message = nullptr;
     }
     player->setJumped();
     player->decrementCountdown(3);

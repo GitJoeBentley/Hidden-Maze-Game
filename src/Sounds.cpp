@@ -11,7 +11,7 @@ Sounds::Sounds() : buffer(new sf::SoundBuffer[NumberOfSounds]), sound(new sf::So
     {
         buffer[i].loadFromFile(soundfile[i]);
         sound[i].setBuffer(buffer[i]);
-        sound[i].setVolume(50);
+        sound[i].setVolume(60);
     }
     // Music
 
