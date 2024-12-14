@@ -12,10 +12,12 @@
 #include "Game.h"
 #include "HighScores.h"
 #include "Sounds.h"
-#include "Message.h"
+//#include "Message.h"
+#include "Msg.h"
+#include "Fonts.h"
 using namespace std;
 
-std::string welcome(sf::RenderWindow& window, const HighScores& highScores);
+std::string welcome(sf::RenderWindow& window, const HighScores& highScores, Fonts& fonts);
 std::string getWelcomeText();
 char getKey();
 
@@ -26,8 +28,10 @@ int main()
     sf::RenderWindow window(sf::VideoMode(GameSize.x, GameSize.y),"Hidden Maze Game",sf::Style::Close);
     window.setFramerateLimit(60);
 
+    Fonts fonts;
+
     HighScores highScores;
-    std::string name = welcome(window, highScores);
+    std::string name = welcome(window, highScores, fonts);
 
     Game* game;
 
@@ -40,7 +44,7 @@ int main()
     // Game Loop starts here ///////////////////////////
     while (playAgain)
     {
-        game = new Game(window, name);
+        game = new Game(window, fonts, name);
         game -> flash();
 
         while (window.isOpen())
@@ -60,7 +64,8 @@ int main()
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))     game->move(Player::Up);
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))   game->move(Player::Down);
                 else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))   game->move(Player::Left);
-                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))  game->move(Player::Right);
+                else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                    game->move(Player::Right);
                 else break;
             }
 
@@ -74,58 +79,66 @@ int main()
                     clock.restart();
                     game->getSounds().stopmusic();
                 }
+                // Loss: Out of time
+                if (game->getPlayer()->getCountdown() <= 0)
+                {
+                    game->setStatus(Game::Loss);
+                    break;
+                }
             }
-
+            if (game->getStatus() == Game::Loss|| game->getStatus() == Game::Win) break;
             game->draw_and_display();
-            if (game->getStatus() == Game::Loss || game->getStatus() == Game::Win) {
-                highScores.updateHighScores(Score(name.c_str(), game->getScore(), game->getBruises(), 60 - game->countdown(), time(0)));
-                highScores.WriteHighScoresFile();
-                break;
-            }
         }
+
+
+        if (game->getStatus() == Game::Loss)
+        {
+            string txt;
+            game->getSounds().play(Sounds::Win);
+            if (game->getPlayer()->getBruises() >= 50) txt = "     You lose\nToo many bruises";
+            else txt = " You lose\nOut of time";
+            Msg msg(Text(txt, fonts.font("arial"), 60, window, sf::Color::Red));
+            msg.draw();
+            window.display();
+            sf::sleep(sf::Time(sf::seconds(4.0f)));
+        }
+
+        if (game->getStatus() == Game::Win)
+        {
+            Msg msg(Text("You won!!!", fonts.font("komikap"), 72, window, sf::Color::Green));
+            msg.draw();
+            window.display();
+            sf::sleep(sf::Time(sf::seconds(5.0f)));
+            highScores.updateHighScores(Score(name.c_str(), game->getScore(), game->getBruises(), 60 - game->getCountdown(), time(0)));
+            highScores.WriteHighScoresFile();
+        }
+        game->draw_and_display();
         playAgain = game->playAgain();
-        delete game;
     }
-    
+    delete game;
+
     return 0;
 }
 
-std::string welcome(sf::RenderWindow& window, const HighScores& highScores)
+std::string welcome(sf::RenderWindow& window, const HighScores& highScores, Fonts& fonts)
 {
     std::string text, buffer, name;
 
     // Text
     text = getWelcomeText();
 
-    sf::Font font;
-    sf::Font instructionsFont;
-    if (!font.loadFromFile(DefaultFontFile))
-    {
-        std::cout << "Can't find font " << DefaultFontFile << std::endl;
-    }
-    if (!instructionsFont.loadFromFile(StatusFontFile))
-    {
-        std::cout << "Can't find font " << StatusFontFile << std::endl;
-    }
+    sf::Text instructions(text, fonts.font("arial"), 18);
 
-    sf::Text instructions;
-    instructions.setString(text.c_str());
-    instructions.setFont(font);
-    instructions.setCharacterSize(18); // in pixels, not points!
     instructions.setFillColor(sf::Color::Cyan);
     instructions.setPosition(90.0f,20.0f);
 
     // Create High Scores text
-    sf::Text highScoresText;
-    highScoresText.setFont(instructionsFont);
-    highScoresText.setCharacterSize(16); // in pixels, not points!
-    highScoresText.setFillColor(sf::Color::Green);
-    highScoresText.setPosition(150.0f,600.0f);
-
-    // Write High Scores
     std::ostringstream sout;
     sout << highScores << std::endl;
-    highScoresText.setString(sout.str());
+    sf::Text highScoresText(sout.str(),fonts.font("courier"), 16);
+
+    highScoresText.setFillColor(sf::Color::Green);
+    highScoresText.setPosition(150.0f,600.0f);
 
     sf::Event evnt;
     char input = ' ';

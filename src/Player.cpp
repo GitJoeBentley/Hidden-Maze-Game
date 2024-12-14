@@ -9,6 +9,7 @@ using namespace std;
 
 Player::Player(const string& name_, Grid& grid_, Sounds& sounds_)
     : name(name_), location(sf::Vector2i(-1,0)), grid(grid_), sounds(sounds_), bruises(0), score(0), maxRow(0), maxCol(-1)
+// Testing: : name(name_), location(sf::Vector2i(38,38)), grid(grid_), sounds(sounds_), bruises(0), score(0), maxRow(0), maxCol(-1)
 {
     playerTexture.loadFromFile(PlayerImageFile);
     player.setTexture(playerTexture);
@@ -77,7 +78,7 @@ Grid::Contents Player::processMove(const sf::Vector2i& newLocation)
     }
     updateScore();
     path.push_back(100 * newLocation.x + newLocation.y);
-    if (bruises >= 50 || countdown <= 0) cellContents = Grid::Loss;
+    if (bruises >= 50) return Grid::Loss;
     return cellContents;
 }
 
@@ -208,4 +209,3 @@ bool Player::light()
     countdown -= 3;
     return true;
 }
-

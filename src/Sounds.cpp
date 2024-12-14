@@ -4,14 +4,14 @@ using namespace std;
 
 Sounds::Sounds() : buffer(new sf::SoundBuffer[NumberOfSounds]), sound(new sf::Sound[NumberOfSounds])
 {
-    string soundfile[NumberOfSounds] = {StepSoundFile, RubberSoundFile, HitWallSoundFile, BellSoundFile, LightSoundFile,
-                                        BombSoundFile, FartSoundFile, WinSoundFile, LoseSoundFile
+    string soundfile[NumberOfSounds] = {StepSoundFile, RubberSoundFile, HitWallSoundFile, LightSoundFile,
+                                        BombSoundFile, FartSoundFile, WinSoundFile, LossSoundFile
                                        };
     for (int i = 0; i < NumberOfSounds; i++)
     {
         buffer[i].loadFromFile(soundfile[i]);
         sound[i].setBuffer(buffer[i]);
-        sound[i].setVolume(40);
+        sound[i].setVolume(50);
     }
     // Music
 
