@@ -33,7 +33,7 @@ int main()
     HighScores highScores;
     std::string name = welcome(window, highScores, fonts);
 
-    Game* game;
+    Game* game = nullptr;
 
     //GAME CLOCK & TIMER
     sf::Clock clock;
@@ -116,7 +116,7 @@ int main()
         game->draw_and_display();
         playAgain = game->playAgain();
     }
-    delete game;
+    if (game) delete game;
 
     return 0;
 }
