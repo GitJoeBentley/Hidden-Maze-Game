@@ -9,7 +9,6 @@
 #include "Sounds.h"
 #include "HighScores.h"
 #include "Constants.h"
-#include "Message.h"
 #include "Fonts.h"
 //#include "Types.h"
 
@@ -69,7 +68,6 @@ private:
 
     bool displayMaze;
     Grid* grid = nullptr;
-    Message* message = nullptr;
     Player* player = nullptr;
     sf::RectangleShape timeBar;
     const float timeBarStartWidth = 600;
